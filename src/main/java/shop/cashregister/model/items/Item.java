@@ -29,7 +29,7 @@ public class Item{
     private static final Pattern itemCodePattern = Pattern.compile("^[A-Z0-9]{1,10}$");
 
     // between 2 and 40 characters: letters, digits & space
-    private static final Pattern fullNamePattern = Pattern.compile("^[^-\\s][A-Za-z0-9 ]{0,40}$");
+    private static final Pattern fullNamePattern = Pattern.compile("^[^-\\s][-A-Za-z0-9 ]{0,40}$");
 
     public static boolean isCodeValid(String itemCode){
         return itemCodePattern.matcher(itemCode).matches();
