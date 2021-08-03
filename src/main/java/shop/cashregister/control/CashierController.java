@@ -10,17 +10,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import shop.cashregister.model.cashier.AuthorisationRequest;
 import shop.cashregister.model.cashier.Cashier;
 import shop.cashregister.model.cashier.CashierService;
-import shop.cashregister.model.items.ItemsOffer;
-import shop.cashregister.model.items.ItemsOfferService;
+import shop.cashregister.model.offers.OfferService;
 
 import javax.naming.InvalidNameException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/cashier")
@@ -37,7 +39,7 @@ public class CashierController{
     private CashierService cashierService;
 
     @Autowired
-    private ItemsOfferService offerService;
+    private OfferService offerService;
 
     @PostMapping(value="/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<List<String>> login(@RequestBody AuthorisationRequest authReq) throws InvalidNameException{
@@ -49,17 +51,17 @@ public class CashierController{
             Authentication authentication = new UsernamePasswordAuthenticationToken(cashier, null, cashier.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             log.info(MessageFormat.format("Cashier with username {0} has successfully logged in", username));
-            return ResponseEntity.ok(listOffers());
+            return ResponseEntity.ok(new ArrayList<>());
         }
         log.info(MessageFormat.format("Invalid credentials for username {0}", username));
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @GetMapping(value="/list_offers", produces = "application/json")
-    public List<String> listOffers() throws InvalidNameException{
-        List<ItemsOffer> offers = offerService.getAll();
-        if(offers == null || offers.size() == 0)    return List.of("No offers are currently available");
-        return offers.stream().map(ItemsOffer::getDescription).collect(Collectors.toList());
-    }
+//    @GetMapping(value="/list_offers", produces = "application/json")
+//    public List<String> listOffers() throws InvalidNameException{
+//        List<SingleItemOffer> singleItemOffers = offerService.getAll();
+//        if(singleItemOffers == null || singleItemOffers.size() == 0)    return List.of("No singleItemOffers are currently available");
+//        return singleItemOffers.stream().map(SingleItemOffer::getDescription).collect(Collectors.toList());
+//    }
 
 }

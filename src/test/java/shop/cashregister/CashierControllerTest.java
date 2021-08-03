@@ -31,8 +31,8 @@ public class CashierControllerTest{
         HttpEntity<AuthorisationRequest> request = new HttpEntity<>(credentials);
 
         ResponseEntity<List> result = restTemplate.postForEntity(url, request, List.class);
-        List<String> offers = result.getBody();
-        Assertions.assertTrue(offers.size() > 0);
+        List<String> singleItemOffers = result.getBody();
+        Assertions.assertTrue(singleItemOffers.size() > 0);
         assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
     }
 
