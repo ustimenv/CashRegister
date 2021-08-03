@@ -17,7 +17,7 @@ public class WholesaleDiscountOffer extends SingleItemOffer{
 
     @Override
     public String getDescription(){
-        return format("If you buy more than {0} {1}, you only pay {2} for each one!",
+        return format("If you buy more than {0} {1}s, you only pay {2} for each one!",
                 quantityThreshold-1, item.getFullName(), discountPrice);
     }
 
