@@ -1,0 +1,11 @@
+.idea
+
+build
+.gradle
+gradlew
+gradlew.bat
+settings.gradle
+
+
+client/venv
+client/__pycache
