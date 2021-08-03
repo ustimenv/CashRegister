@@ -2,6 +2,9 @@ package shop.cashregister.model.transactions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import shop.cashregister.model.cashier.Cashier;
+
+import static shop.cashregister.model.transactions.CashRegisterTransaction.Status.STARTED;
 
 @Service
 public class CashRegisterTransactionService{
@@ -15,4 +18,13 @@ public class CashRegisterTransactionService{
     public void delete(CashRegisterTransaction transaction){
         repository.delete(transaction);
     }
+
+    public boolean doesCashierHaveActiveAnTransaction(Cashier cashier){
+        return repository.countTransactionsWithStatusByCashier(STARTED, cashier) == 0;
+    }
+
+    public CashRegisterTransaction getActiveTransactionByUser(Cashier cashier){
+        return repository.getTransactionsWithStatusByCashier(STARTED, cashier).get(0);
+    }
+
 }

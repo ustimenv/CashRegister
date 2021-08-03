@@ -14,7 +14,6 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class OfferTest extends AbstractTest{
 
-    //TODO
     @Test
     public void testAddItemsVoucherOffer() throws InvalidAttributeValueException{
         List<ChangeItemQuantityRequest> items = List.of(

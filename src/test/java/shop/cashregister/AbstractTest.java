@@ -15,7 +15,6 @@ import shop.cashregister.model.transactions.ChangeItemQuantityRequest;
 import shop.cashregister.model.transactions.HistoricalItemsSoldService;
 import shop.cashregister.model.transactions.IntermediateTransactionFeedback;
 
-import javax.management.InvalidAttributeValueException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

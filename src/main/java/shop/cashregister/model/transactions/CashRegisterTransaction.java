@@ -1,6 +1,7 @@
 package shop.cashregister.model.transactions;
 
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import shop.cashregister.model.cashier.Cashier;
 
 import javax.persistence.*;
@@ -18,16 +19,18 @@ public class CashRegisterTransaction{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private double amount;                      // (current for STARTED transactions) money value of the transaction
+    private double amount;                      // (subtotal for STARTED transactions) money value of the transaction
 
     @Enumerated(EnumType.STRING)                // TODO convert to ORDINAL
     private Status status =Status.STARTED;
 
+    @Column(name = "completion_time")
     private LocalDateTime completionTime;
 
     @ManyToOne
     @JoinColumn(name="transactions")
-    private Cashier transactionExecutor;
+    private @Setter
+    Cashier transactionExecutor;
 
     @Override
     public boolean equals(Object other){
