@@ -2,8 +2,10 @@ package shop.cashregister.model.cashier;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.cashregister.model.transactions.CashRegisterTransaction;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Entity
@@ -25,6 +27,8 @@ public class Cashier{
     @Column(name="password", nullable=false)
     private String password;
 
+    @OneToMany(mappedBy="transactionExecutor", fetch = FetchType.LAZY)
+    private List<CashRegisterTransaction> transactions;
 
     // username is an alphanumeric (no whitespaces) string between 1 and 10 characters
     private static final Pattern usernamePattern = Pattern.compile("^[A-Za-z0-9]{1,10}$");

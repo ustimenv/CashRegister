@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - CheckoutControllerTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>CheckoutControllerTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/shop.cashregister.control.html">shop.cashregister.control</a> &gt; CheckoutControllerTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">1</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.260s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">contextLoads()</td>
+<td class="success">0.260s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>07:22:15.671 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating CacheAwareContextLoaderDelegate from class [org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate]
+07:22:15.693 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating BootstrapContext using constructor [public org.springframework.test.context.support.DefaultBootstrapContext(java.lang.Class,org.springframework.test.context.CacheAwareContextLoaderDelegate)]
+07:22:15.755 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating TestContextBootstrapper for test class [shop.cashregister.control.CheckoutControllerTest] from class [org.springframework.boot.test.context.SpringBootTestContextBootstrapper]
+07:22:15.774 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Neither @ContextConfiguration nor @ContextHierarchy found for test class [shop.cashregister.control.CheckoutControllerTest], using SpringBootContextLoader
+07:22:15.780 [Test worker] DEBUG org.springframework.test.context.support.AbstractContextLoader - Did not detect default resource location for test class [shop.cashregister.control.CheckoutControllerTest]: class path resource [shop/cashregister/control/CheckoutControllerTest-context.xml] does not exist
+07:22:15.781 [Test worker] DEBUG org.springframework.test.context.support.AbstractContextLoader - Did not detect default resource location for test class [shop.cashregister.control.CheckoutControllerTest]: class path resource [shop/cashregister/control/CheckoutControllerTestContext.groovy] does not exist
+07:22:15.782 [Test worker] INFO org.springframework.test.context.support.AbstractContextLoader - Could not detect default resource locations for test class [shop.cashregister.control.CheckoutControllerTest]: no resource found for suffixes {-context.xml, Context.groovy}.
+07:22:15.783 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [shop.cashregister.control.CheckoutControllerTest]: CheckoutControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+07:22:15.855 [Test worker] DEBUG org.springframework.test.context.support.ActiveProfilesUtils - Could not find an 'annotation declaring class' for annotation type [org.springframework.test.context.ActiveProfiles] and class [shop.cashregister.control.CheckoutControllerTest]
+07:22:15.974 [Test worker] DEBUG org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider - Identified candidate component class: file [/home/vlad/Java/Cashier/build/classes/java/main/shop/cashregister/CashRegisterApplication.class]
+07:22:15.976 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration shop.cashregister.CashRegisterApplication for test class shop.cashregister.control.CheckoutControllerTest
+07:22:16.123 [Test worker] DEBUG org.springframework.boot.test.context.SpringBootTestContextBootstrapper - @TestExecutionListeners is not present for class [shop.cashregister.control.CheckoutControllerTest]: using defaults.
+07:22:16.124 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener, org.springframework.security.test.context.support.ReactorContextTestExecutionListener, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.event.ApplicationEventsTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener, org.springframework.test.context.event.EventPublishingTestExecutionListener]
+07:22:16.152 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@6eefee08, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@6c3fbda6, org.springframework.test.context.event.ApplicationEventsTestExecutionListener@cb081c9, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@7c4fe800, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@6d41c62f, org.springframework.test.context.support.DirtiesContextTestExecutionListener@7c8294ac, org.springframework.test.context.transaction.TransactionalTestExecutionListener@74b4ec3c, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@77381542, org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener@142bd534, org.springframework.test.context.event.EventPublishingTestExecutionListener@7c6404e9, org.springframework.security.test.context.support.ReactorContextTestExecutionListener@2fe2d255, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@18c740ee, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@520fa4b7, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@e10b153, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@3759aabe, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener@153b4c8b, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@3abe7887]
+07:22:16.159 [Test worker] DEBUG org.springframework.test.context.support.AbstractDirtiesContextTestExecutionListener - Before test class: context [DefaultTestContext@5177aa5f testClass = CheckoutControllerTest, testInstance = [null], testMethod = [null], testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@302de747 testClass = CheckoutControllerTest, locations = '{}', classes = '{class shop.cashregister.CashRegisterApplication}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}', contextCustomizers = set[org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory$DisableMetricExportContextCustomizer@2cd66841, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory$Customizer@5f4eabf3, org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@68ea17dd, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@b9b61b2, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@58794ef7, org.springframework.boot.test.context.SpringBootTestArgs@1, org.springframework.boot.test.context.SpringBootTestWebEnvironment@27af540e], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.boot.test.context.SpringBootContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.activateListener' -&gt; true]], class annotated with @DirtiesContext [false] with mode [null].
+07:22:16.210 [Test worker] DEBUG org.springframework.test.context.support.TestPropertySourceUtils - Adding inlined properties to environment: {spring.jmx.enabled=false, org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.3)
+
+2021-08-03 07:22:16.651  INFO 53030 --- [    Test worker] s.c.control.CheckoutControllerTest       : Starting CheckoutControllerTest using Java 16.0.1 on prime with PID 53030 (started by vlad in /home/vlad/Java/Cashier)
+2021-08-03 07:22:16.656  INFO 53030 --- [    Test worker] s.c.control.CheckoutControllerTest       : No active profile set, falling back to default profiles: default
+2021-08-03 07:22:17.681  INFO 53030 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-08-03 07:22:17.773  INFO 53030 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 78 ms. Found 5 JPA repository interfaces.
+2021-08-03 07:22:18.577  INFO 53030 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : ecommercedb - Starting...
+2021-08-03 07:22:18.799  INFO 53030 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : ecommercedb - Start completed.
+2021-08-03 07:22:18.870  INFO 53030 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-08-03 07:22:18.920  INFO 53030 --- [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-08-03 07:22:19.078  INFO 53030 --- [    Test worker] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-08-03 07:22:19.185  INFO 53030 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+Hibernate: drop table if exists cashier CASCADE 
+Hibernate: drop table if exists check_out CASCADE 
+Hibernate: drop table if exists item CASCADE 
+Hibernate: drop table if exists items_sold CASCADE 
+Hibernate: drop table if exists offer CASCADE 
+Hibernate: create table cashier (id bigint generated by default as identity, first_name varchar(255) not null, last_name varchar(255) not null, password varchar(255) not null, username varchar(255), primary key (id))
+Hibernate: create table check_out (id bigint generated by default as identity, amount double not null, completion_time timestamp, status varchar(255), primary key (id))
+Hibernate: create table item (id bigint generated by default as identity, code varchar(255), default_price double not null, full_name varchar(255), primary key (id))
+Hibernate: create table items_sold (id bigint generated by default as identity, number_sold integer not null, checkout bigint, item varchar(255), primary key (id))
+Hibernate: create table offer (id bigint generated by default as identity, description varchar(255), primary key (id))
+Hibernate: alter table cashier add constraint UK_es26kyk9ljny4wlxcn7u45xc1 unique (username)
+Hibernate: alter table item add constraint UK_6cgogdarkq48dlg1lbnv4q1oq unique (code)
+Hibernate: alter table items_sold add constraint FKbk5co7ndlo6p57t0lfui5jrt1 foreign key (checkout) references check_out
+Hibernate: alter table items_sold add constraint FKbwrb298bujiovc3x3e8x1h5ub foreign key (item) references item (code)
+2021-08-03 07:22:19.959  INFO 53030 --- [    Test worker] o.h.t.schema.internal.SchemaCreatorImpl  : HHH000476: Executing import script 'file:/home/vlad/Java/Cashier/build/resources/main/import.sql'
+Hibernate: INSERT INTO item(code, full_name, default_price) VALUES('VOUCHER', 'Gift Card', 5)
+Hibernate: INSERT INTO item(code, full_name, default_price) VALUES('TSHIRT', 'Summer T-Shirt', 20)
+Hibernate: INSERT INTO item(code, full_name, default_price) VALUES('PANTS', 'Summer Pants', 7.5)
+2021-08-03 07:22:19.968  INFO 53030 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-08-03 07:22:19.981  INFO 53030 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-08-03 07:22:21.032  WARN 53030 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-08-03 07:22:21.395  INFO 53030 --- [    Test worker] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2021-08-03 07:22:21.790  INFO 53030 --- [    Test worker] s.c.control.CheckoutControllerTest       : Started CheckoutControllerTest in 5.571 seconds (JVM running for 7.253)
+SS
+SS
+SS
+SS
+SS
+SS
+SS
+SS
+SS
+SS
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 7.1.1</a> at 3 Aug 2021, 07:22:22</p>
+</div>
+</div>
+</body>
+</html>
