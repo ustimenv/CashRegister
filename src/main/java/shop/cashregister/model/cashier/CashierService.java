@@ -1,11 +1,13 @@
 package shop.cashregister.model.cashier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.naming.InvalidNameException;
 
 import static java.text.MessageFormat.format;
 
+@Service
 public class CashierService{
 
     @Autowired
