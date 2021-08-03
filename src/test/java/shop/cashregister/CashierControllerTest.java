@@ -10,7 +10,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import shop.cashregister.control.CashierController;
 import shop.cashregister.model.cashier.AuthorisationRequest;
 
 import java.util.List;
@@ -20,8 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class CashierControllerTest{
-    @Autowired
-    private CashierController cashierController;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -38,7 +35,7 @@ public class CashierControllerTest{
         Assertions.assertTrue(offers.size() > 0);
         assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
     }
-    
+
     @Test
     public void testLoginCorrectUsernameWrongPassword(){
         AuthorisationRequest credentials = new AuthorisationRequest("Caroline", "wrong password");

@@ -3,6 +3,7 @@ package shop.cashregister.control;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,26 +17,26 @@ public class CheckOutController{
     private static Logger log = LogManager.getLogger(CheckOutController.class);
 
     @Transactional
-    @PostMapping(value="/begin", produces="application/json")
-    public Object initiateTransaction(){
+    @PostMapping(value="/{username}/begin", produces="application/json")
+    public Object initiateTransaction(@PathVariable(value = "username") String username){
         return null;
     }
 
     @Transactional
-    @PostMapping(value="/end", produces="application/json")
-    public Object endTransaction(){
+    @PostMapping(value="/{username}/end", produces="application/json")
+    public Object endTransaction(@PathVariable(value = "username") String username){
         return null;
     }
 
     @Transactional
-    @PostMapping(value="/add_item", produces="application/json")
-    public Object addItem(){
+    @PostMapping(value="/{username}/add_item", produces="application/json")
+    public Object addItem(@PathVariable(value = "username") String username){
         return null;
     }
 
     @Transactional
-    @PostMapping(value="/remove_item", produces="application/json")
-    public Object removeItem(){
+    @PostMapping(value="/{username}/remove_item", produces="application/json")
+    public Object removeItem(@PathVariable(value = "username") String username){
         return null;
     }
 }
