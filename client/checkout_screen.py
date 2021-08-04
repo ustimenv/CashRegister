@@ -1,16 +1,18 @@
 import ast
 import tkinter as tk
+from functools import partial
 from tkinter import ttk
 from tkinter.ttk import Entry
-
 import requests
 
 
-class ScannedItems(tk.Frame):
+class OffersApplied(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, width=400, height=1000, background="#b22222")
         self.parent = parent
+        tk.Label(self, text='Offers', font=("Verdana", 20))  # .grid(row=0, column=0)
         self.scanned_items = []
+        # self.scanned_items.pack(side='left', padx=0, pady=0, anchor='w')
 
     def add_item(self, item):
         for entry in self.scanned_items:
@@ -20,26 +22,64 @@ class ScannedItems(tk.Frame):
         self.scanned_items.append(ScannedItemsEntry(item, self.parent))
 
 
+class ScannedItems(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent, width=300, height=800)
+        self.parent = parent
+        self.title = tk.Label(master=self, text='Scanned', font=("Verdana", 20))
+        self.title.pack(side=tk.TOP)
+        self.scanned_items = []
+
+    def _pack_all(self):
+        for scanned_item in self.scanned_items:
+            scanned_item.pack(side=tk.TOP)
+
+    def add_item(self, item):
+        for i, entry in enumerate(self.scanned_items):
+            if entry.item == item:
+                quantity = entry.quantity
+                entry.destroy()
+                self.scanned_items[i] = ScannedItemsEntry(item, self, quantity + 1)
+                self._pack_all()
+                return
+
+        self.scanned_items.append(ScannedItemsEntry(item, self))
+        self._pack_all()
+
+    def remove_item(self, item):
+        for i, entry in enumerate(self.scanned_items):
+            if entry.item == item:
+                quantity = entry.quantity
+                entry.destroy()
+                if quantity > 1:
+                    self.scanned_items[i] = ScannedItemsEntry(item, self, quantity - 1)
+                    self._pack_all()
+                else:
+                    del self.scanned_items[i]
+                self._pack_all()
+                return
+
+
 class ScannedItemsEntry(tk.Frame):
     def __init__(self, item, parent, quantity=1):
-        tk.Frame.__init__(self, parent)
-        self.item = item                        # actual item stored in this entry
+        tk.Frame.__init__(self, parent, background='green')
+        self.parent= parent
+        self.item = item  # actual item stored in this entry
         self.quantity = quantity
 
         self.item_label = tk.Label(self, text=item.full_name)
-        self.delete_button = tk.Button(self, text='Remove', command=self.delete_one)
-        self.quantity_label = tk.Label(self, text=item.full_name)
 
-        self.item_label.grid(row=0, column=0)
-        self.delete_button.grid(row=0, column=1)
-        self.quantity_label.grid(row=0, column=2)
+        delete_function = partial(self._delete)
+        self.delete_button = tk.Button(self, text='Remove', command=delete_function)
 
-    def delete_one(self):
-        self.quantity -= 1
-        if self.quantity > 0:
-            self.quantity_label['text'] = self.quantity
-        else:
-            self.destroy()
+        self.quantity_label = tk.Label(self, text=self.quantity)
+
+        self.item_label.pack(side=tk.LEFT)
+        self.delete_button.pack(side=tk.LEFT)
+        self.quantity_label.pack(side=tk.LEFT)
+
+    def _delete(self):
+        self.parent.remove_item(self.item)
 
 
 class DropDownMenuWithSearch(tk.Frame):
@@ -83,7 +123,6 @@ class SellableItem:
         return self.code.__hash__()
 
 
-
 class CheckoutScreen(tk.Frame):
     # Endpoints
     _list_items_endpoint = None
@@ -94,18 +133,17 @@ class CheckoutScreen(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+
         self.controller = controller
         # Frame elements
-        self.name_label = None                              # logged in cashier's name, top left corner
-        self.scanned_items = ScannedItems(parent)           # list of entries of type ScannedItem, on the left side
-        self.scanner_frame = tk.Frame(self, width=100, height=100)
-        self.scanner_frame.place(relx=.5, rely=.5, anchor=tk.CENTER)
+        self.name_label = None  # logged in cashier's name, top left corner
+        self.scanned_items = ScannedItems(self)  # list of entries of type ScannedItem, on the left side
 
-        self.item_select = None                             # dropdown menu & searchbar to select items to scan
+        self.item_select = None  # dropdown menu & searchbar to select items to scan
         self.sellable_items = set()
 
     # A number of variables depend on LoginScreen, so since __init__ doesn't get called on frame change,
-    # the root controller will have call prepare explicitly
+    # the root controller will have to call prepare() explicitly
     def prepare(self):
         self._list_items_endpoint = f'{self.controller.checkout_url}/{self.controller.username}/list_items'
         self._begin_transaction_endpoint = f'{self.controller.checkout_url}/{self.controller.username}/begin'
@@ -113,23 +151,28 @@ class CheckoutScreen(tk.Frame):
         self._add_item_endpoint = f'{self.controller.checkout_url}/{self.controller.username}/add_item'
         self._remove_item_endpoint = f'{self.controller.checkout_url}/{self.controller.username}/remove_item'
 
-        self.name_label = tk.Label(self, text=f'Cashier: {self.controller.username}', font=("Verdana", 20))
-        self.name_label.place(anchor=tk.NW)
-
         self.sellable_items = self._list_items()
+        # Child components
         self.item_select = DropDownMenuWithSearch(self)
-        self.item_select.place(relx=.5, rely=.1, anchor=tk.N)
+        self.finalise_button = tk.Button(self, text="Finalise Transaction", command=self.finalise)
+
+        # Wacky geometry
+        tk.Label(self, text=f'Cashier: {self.controller.username}', font=("Verdana", 20)).pack(side=tk.TOP,
+                                                                                               anchor=tk.NW)
+        self.item_select.pack(side=tk.TOP)
+        self.scanned_items.pack(side=tk.TOP, anchor=tk.NW)
+        self.finalise_button.pack(side=tk.BOTTOM, anchor=tk.S)
+
+    def finalise(self):
+        pass
 
     def scan_item(self, item_code):
         for item in self.sellable_items:
             if item.code == item_code:
-                print('scann')
                 self.scanned_items.add_item(item)
                 return
 
-
-    # Initialise the set of all possible scannable items
-    def _list_items(self):
+    def _list_items(self):  # Initialise the set of all possible scanable items
         headers = {'Content-type': 'application/json', 'Authorization': f'Bearer {self.controller.session_token}'}
         req = requests.get(self._list_items_endpoint, headers=headers)
         items_info = ast.literal_eval(req.content.decode('utf-8'))

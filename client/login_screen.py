@@ -1,6 +1,5 @@
 import tkinter as tk
 from functools import partial
-from time import sleep
 
 import requests
 
@@ -38,7 +37,8 @@ class LoginScreen(tk.Frame):
         if len(input_name) > 0 and len(input_password) > 0:
             try:
                 headers = {'Content-type': 'application/json'}
-                req = requests.post(self._login_endpoint, json={'username': input_name, 'password': input_password}, headers=headers)
+                req = requests.post(self._login_endpoint,
+                                    json={'username': input_name, 'password': input_password}, headers=headers)
                 if req.status_code == 200:
                     self.controller.session_token = req.content.decode('utf-8')
                     self.controller.username = input_name
