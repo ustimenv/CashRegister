@@ -53,14 +53,6 @@ public class RootController{
     @Autowired
     private HistoricalItemsSoldService historicalItemsSoldService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    JwtTokenManager tokenManager;
 
 
     @Transactional
@@ -105,23 +97,5 @@ public class RootController{
         return null;
     }
 
-    @PostMapping(value="/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> login(@RequestBody AuthorisationRequest authReq){
-        String username = authReq.getUsername();
-        String password = authReq.getPassword();
-        try{
-            Cashier cashier = cashierService.getByUsername(username);
-            // attempt to log in
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authReq.getUsername(), authReq.getPassword()));
-            // if successful, update the security context
-            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // and respond with the assigned jwt token to allow the client to sign their future requests
-            return ResponseEntity.ok(tokenManager.generateToken(authentication));
-
-        } catch(Exception e){
-            log.info(MessageFormat.format("Invalid credentials for username {0}", username));
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-    }
 }

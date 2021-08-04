@@ -55,28 +55,13 @@ public class AbstractTest{
     String removeItemTransactionEndpoint =      checkoutUrl +   "/remove_item";
 
 
-
-    void authenticateValidUser(){
-        AuthorisationRequest credentials = new AuthorisationRequest(validCashierUsername, validCashierPassword);
+    ResponseEntity<String> authenticateUser(String username, String password){
+        AuthorisationRequest credentials = new AuthorisationRequest(username, password);
         HttpEntity<AuthorisationRequest> request = new HttpEntity<>(credentials);
-        ResponseEntity<List> result = restTemplate.postForEntity(loginEndpoint, request, List.class);
+        return restTemplate.postForEntity(loginEndpoint, request, String.class);
     }
 
     ResponseEntity<String> beginTransaction(){
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
-        System.out.println(beginTransactionEndpoint);
         return restTemplate.postForEntity(beginTransactionEndpoint, null, String.class);
     }
 
@@ -92,7 +77,6 @@ public class AbstractTest{
         return restTemplate.postForEntity(endTransactionEndpoint, null, TransactionFeedback.class);
     }
 
-    @Test
     void testSubtotalsSeries(List<ChangeItemQuantityRequest> items, List<TransactionFeedback> expectedFeedback){
         for(int i=0; i<items.size(); i++){
             ResponseEntity<TransactionFeedback> result = addItem(items.get(i));

@@ -22,7 +22,7 @@ public class CheckoutControllerTest extends AbstractTest{
     // BEGIN
     @Test
     public void testTransactionBegin(){
-        authenticateValidUser();
+        authenticateUser(validCashierUsername, validCashierPassword);
         ResponseEntity<String> result = beginTransaction();
 //        assertTrue(result.getBody() == null || result.getBody().length() < 1);      // empty response
         assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code

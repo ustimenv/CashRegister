@@ -16,31 +16,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class CashierControllerTest extends AbstractTest{
+public class AuthenticationTest extends AbstractTest{
 
     @Test
     public void testLoginCorrectUsernameCorrectPassword(){
-        AuthorisationRequest credentials = new AuthorisationRequest(validCashierUsername, validCashierPassword);
-        HttpEntity<AuthorisationRequest> request = new HttpEntity<>(credentials);
-        ResponseEntity<List> result = restTemplate.postForEntity(loginEndpoint, request, List.class);
-        List<String> singleItemOffers = result.getBody();
-        Assertions.assertTrue(singleItemOffers.size() > 0);
+        ResponseEntity<String> result = authenticateUser(validCashierUsername, validCashierPassword);
+        String token = result.getBody();
+        Assertions.assertTrue(token != null && token.length() > 0);
         assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
     }
 
     @Test
     public void testLoginCorrectUsernameWrongPassword(){
-        AuthorisationRequest credentials = new AuthorisationRequest(validCashierUsername, "some very clearly wrong password");
-        HttpEntity<AuthorisationRequest> request = new HttpEntity<>(credentials);
-        ResponseEntity<List> result = restTemplate.postForEntity(loginEndpoint, request, List.class);
+        ResponseEntity<String> result = authenticateUser(validCashierUsername, "some very clearly wrong password");
+        String token = result.getBody();
+        Assertions.assertNull(token);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getStatusCodeValue());
     }
 
     @Test
     public void testLoginWrongUsernameWrongPassword(){
-        AuthorisationRequest credentials = new AuthorisationRequest("Michael", "abc");
-        HttpEntity<AuthorisationRequest> request = new HttpEntity<>(credentials);
-        ResponseEntity<List> result = restTemplate.postForEntity(loginEndpoint, request, List.class);
+        ResponseEntity<String> result = authenticateUser("Michael", "abc");
+        String token = result.getBody();
+        Assertions.assertNull(token);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getStatusCodeValue());
     }
 }

@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     public PasswordEncoder passwordEncoderBean() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-    
+
     protected void configure(HttpSecurity httpSec) throws Exception {
         httpSec
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
