@@ -14,6 +14,8 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class CheckoutXForThePriceOfYOfferTest extends AbstractTest{
+    private String username="C";
+    private String password="pass";
 
     @Test
     public void testAddItemsWithoutRemoving() throws InvalidAttributeValueException{
@@ -25,14 +27,11 @@ public class CheckoutXForThePriceOfYOfferTest extends AbstractTest{
                 new TransactionFeedback(5),  new TransactionFeedback(25),
                 new TransactionFeedback(25)
         );
-        testTransactionFeedbackEvolution(items, expectedFeedback);
+        testTransactionFeedbackEvolution(items, expectedFeedback, username, password);
     }
 
     @Test
     public void testAddItemsWithRemoving() throws InvalidAttributeValueException{
     }
 
-    @Test
-    public void testAddItemsWithIllegalRemoving() throws InvalidAttributeValueException{
-    }
 }

@@ -17,6 +17,8 @@ import shop.cashregister.model.items.SellableItemService;
 import shop.cashregister.model.offers.OfferService;
 
 import javax.naming.InvalidNameException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +30,6 @@ import java.util.Map;
 @RequestMapping("/checkout")
 public class RootController{
     private static Logger log = LogManager.getLogger(RootController.class);
-
-    @Autowired
-    private RootController rootController;
 
     @Autowired
     private SellableItemService itemService;
@@ -59,7 +58,6 @@ public class RootController{
         CashRegisterTransaction newTransaction = new CashRegisterTransaction();
         newTransaction.setTransactionExecutor(cashier);
         transactionsService.save(newTransaction);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -77,19 +75,27 @@ public class RootController{
 
     @Transactional
     @PostMapping(value="/{username}/add_item", produces="application/json")
-    public ResponseEntity<TransactionFeedback> addItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
+    public ResponseEntity<TransactionFeedback> addItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request, HttpServletResponse response)
             throws InvalidNameException{
+
         Cashier cashier = cashierService.getByUsername(username);
-        if(cashier == null)         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(cashier == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         CashRegisterTransaction transaction = transactionsService.getActiveTransactionByUser(cashier);
-        if(transaction == null)     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(transaction == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         SellableItem item = itemService.getByCode(request.getItemCode());
-        if(item == null)            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(item == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         // add item to the 'basket'
-        transactionItemsService.putInBasket(transaction, item, request.getChangeBy());
+        try{
+            transactionItemsService.putInBasket(transaction, item, request.getChangeBy());
+        } catch(TransactionQuantityException e){    // invalid input
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         Basket basket = transactionItemsService.getBasketByTransaction(transaction);
 
@@ -122,31 +128,41 @@ public class RootController{
 
     @Transactional
     @PostMapping(value="/{username}/remove_item", produces="application/json")
-    public ResponseEntity<String> removeItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
+    public ResponseEntity<TransactionFeedback> removeItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
             throws InvalidNameException{
+
+        System.out.println("0");
         Cashier cashier = cashierService.getByUsername(username);
         if(cashier == null)         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        System.out.println("1");
 
         CashRegisterTransaction transaction = transactionsService.getActiveTransactionByUser(cashier);
         if(transaction == null)     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        System.out.println("2");
 
         SellableItem item = itemService.getByCode(request.getItemCode());
         if(item == null)            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        System.out.println("3");
 
         // remove item from the 'basket'
-        transactionItemsService.removeFromBasket(transaction, item, request.getChangeBy());
+        try{
+            transactionItemsService.removeFromBasket(transaction, item, request.getChangeBy());
+        } catch (TransactionQuantityException e){   // attempting to remove a non-existent item or invalid input
+            System.out.println("3.5");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        System.out.println("4");
+
         Basket basket = transactionItemsService.getBasketByTransaction(transaction);
 
-        if(basket != null && !basket.isEmpty()){
-            // apply offers
-            TransactionFeedback feedback = applyOffersToBasket(basket);
+        // apply offers
+        TransactionFeedback feedback = applyOffersToBasket(basket);
 
-            // update transaction subtotal
-            transaction.setValue(feedback.getAmountToPay());
-            transactionsService.save(transaction);
-        }
+        // update transaction subtotal
+        transaction.setValue(feedback.getAmountToPay());
+        transactionsService.save(transaction);
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(feedback);
     }
 
 }

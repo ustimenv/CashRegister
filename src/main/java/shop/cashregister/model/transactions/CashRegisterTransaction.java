@@ -44,4 +44,8 @@ public class CashRegisterTransaction{
     public int hashCode(){
         return Objects.hash(id);
     }
+
+    public String toString(){
+        return String.valueOf(id);
+    }
 }

@@ -15,10 +15,11 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class CheckoutMixedOfferTest extends AbstractTest{
-    //todo better test names
+    private String username="D";
+    private String password="pass";
 
     @Test
-    public void test1() throws InvalidAttributeValueException{
+    public void testAddItemsWithoutRemoving() throws InvalidAttributeValueException{
         List<ChangeItemQuantityRequest> items = List.of(
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("VOUCHER", 1),
@@ -31,11 +32,11 @@ public class CheckoutMixedOfferTest extends AbstractTest{
                 new TransactionFeedback(37.5),  new TransactionFeedback(57.5),
                 new TransactionFeedback(74.5)
         );
-        testTransactionFeedbackEvolution(items, expectedFeedback);
+        testTransactionFeedbackEvolution(items, expectedFeedback, username, password);
     }
 
     @Test
-    public void test2() throws InvalidAttributeValueException{
+    public void testAddItemsWithRemoving() throws InvalidAttributeValueException{
         List<ChangeItemQuantityRequest> items = List.of(
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
@@ -48,7 +49,7 @@ public class CheckoutMixedOfferTest extends AbstractTest{
                 new TransactionFeedback(50), new TransactionFeedback(67),
                 new TransactionFeedback(67), new TransactionFeedback(50)
         );
-        testTransactionFeedbackEvolution(items, expectedFeedback);
+        testTransactionFeedbackEvolution(items, expectedFeedback, username, password);
     }
 
 }

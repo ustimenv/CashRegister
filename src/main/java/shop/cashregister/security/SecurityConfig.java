@@ -47,11 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity httpSec) throws Exception {
         httpSec
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .authorizeRequests().antMatchers("/cashier/login").permitAll()
-                .authorizeRequests().antMatchers("/**").permitAll() //TODO specify exact paths
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
+                .authorizeRequests().antMatchers("/cashier/login/**").permitAll()
+                .antMatchers("/checkout/**").permitAll()
+                .anyRequest().authenticated();
 
         httpSec.cors().and().csrf().disable();
         httpSec.addFilterBefore(requestSecurityFilterBean(), UsernamePasswordAuthenticationFilter.class);

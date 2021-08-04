@@ -14,10 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AuthenticationTest extends AbstractTest{
+    private String username="E";
+    private String password="pass";
 
     @Test
     public void testLoginCorrectUsernameCorrectPassword(){
-        ResponseEntity<String> result = authenticateUser(validCashierUsername, validCashierPassword);
+        ResponseEntity<String> result = authenticateUser(username, password);
         String token = result.getBody();
         Assertions.assertTrue(token != null && token.length() > 0);
         assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
@@ -25,7 +27,7 @@ public class AuthenticationTest extends AbstractTest{
 
     @Test
     public void testLoginCorrectUsernameWrongPassword(){
-        ResponseEntity<String> result = authenticateUser(validCashierUsername, "some very clearly wrong password");
+        ResponseEntity<String> result = authenticateUser(username, "some very clearly wrong password");
         String token = result.getBody();
         Assertions.assertNull(token);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getStatusCodeValue());
@@ -37,16 +39,5 @@ public class AuthenticationTest extends AbstractTest{
         String token = result.getBody();
         Assertions.assertNull(token);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getStatusCodeValue());
-    }
-
-
-    @Test
-    public void testTransactionBeginEnd(){
-        String token = authenticateUser(validCashierUsername, validCashierPassword).getBody();
-        ResponseEntity<String> result = beginTransaction(token);
-        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
-
-        result = endTransaction(token);
-        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
     }
 }

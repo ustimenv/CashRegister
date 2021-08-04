@@ -1,6 +1,5 @@
 package shop.cashregister.model.transactions;
 
-import org.hibernate.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import shop.cashregister.model.items.SellableItem;
@@ -41,8 +40,8 @@ public class TransactionItemsService{
         return basket;
     }
 
-    public void putInBasket(CashRegisterTransaction transaction, SellableItem item, int quantity){
-        if(quantity < 1)    throw new TransactionException("Number of items to put in a positive number, provided "+quantity);
+    public void putInBasket(CashRegisterTransaction transaction, SellableItem item, int quantity) throws TransactionQuantityException{
+        if(quantity < 1)    throw new TransactionQuantityException("Number of items to put in a positive number, provided "+quantity);
         TransactionItems itemInfo = repository.getByItemAndCheckOut(transaction, item);
         if(itemInfo == null){       // the first item of this type being placed in the basket
             itemInfo = new TransactionItems();
@@ -55,17 +54,18 @@ public class TransactionItemsService{
         save(itemInfo);
     }
 
-    public void removeFromBasket(CashRegisterTransaction transaction, SellableItem item, int quantity){
-        if(quantity < 1)    throw new TransactionException("Number of items to remove must be a positive number, provided "+quantity);
+    public void removeFromBasket(CashRegisterTransaction transaction, SellableItem item, int quantity) throws TransactionQuantityException{
+        quantity *= -1;
+        if(quantity  < 0)    throw new TransactionQuantityException("Number of items to remove must be a negative number, provided "+quantity);
 
         TransactionItems itemInfo = repository.getByItemAndCheckOut(transaction, item);
-        if(itemInfo == null)    throw new TransactionException(format("Can't remove item {0} from transaction {1}, " +
+        if(itemInfo == null)    throw new TransactionQuantityException(format("Can't remove item {0} from transaction {1}, " +
                                         "as has not been put in the basket", item.getCode(), transaction.getId()));
 
         int numItemsActual = itemInfo.getNumberSold();
 
         if(numItemsActual < quantity){
-            throw new TransactionException(format("Can't remove {0} items in transaction id={1}, there are only {2} of them!",
+            throw new TransactionQuantityException(format("Can't remove {0} items in transaction id={1}, there are only {2} of them!",
                     quantity, transaction.getId(), numItemsActual));
         } else if(numItemsActual > quantity){
             itemInfo.setNumberSold(numItemsActual - quantity);
