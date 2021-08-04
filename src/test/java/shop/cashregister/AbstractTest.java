@@ -92,7 +92,7 @@ public class AbstractTest{
         beginTransaction(token);
         for(int i=0; i<items.size(); i++){
             ResponseEntity<TransactionFeedback> result = addItem(token, items.get(i));
-            assertEquals(result.getBody().getAmountToPay(), expectedFeedback.get(i).getAmountToPay());
+            assertEquals(expectedFeedback.get(i).getAmountToPay(), result.getBody().getAmountToPay());
             assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
         }
         endTransaction(token);

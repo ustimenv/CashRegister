@@ -14,18 +14,25 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class CheckoutXForThePriceOfYOfferTest extends AbstractTest{
+
     @Test
-    public void testAddItemsTshirtOffer() throws InvalidAttributeValueException{
+    public void testAddItemsWithoutRemoving() throws InvalidAttributeValueException{
         List<ChangeItemQuantityRequest> items = List.of(
-                new ChangeItemQuantityRequest("TSHIRT", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
-                new ChangeItemQuantityRequest("TSHIRT", 1), new ChangeItemQuantityRequest("VOUCHER", 1),
-                new ChangeItemQuantityRequest("TSHIRT", 1)
+                new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
+                new ChangeItemQuantityRequest("VOUCHER", 1)
         );
         List<TransactionFeedback> expectedFeedback = List.of(
-                new TransactionFeedback(20),  new TransactionFeedback(40),
-                new TransactionFeedback(57),  new TransactionFeedback(62),
-                new TransactionFeedback(81)
+                new TransactionFeedback(5),  new TransactionFeedback(25),
+                new TransactionFeedback(25)
         );
         testTransactionFeedbackEvolution(items, expectedFeedback);
+    }
+
+    @Test
+    public void testAddItemsWithRemoving() throws InvalidAttributeValueException{
+    }
+
+    @Test
+    public void testAddItemsWithIllegalRemoving() throws InvalidAttributeValueException{
     }
 }

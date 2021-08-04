@@ -38,4 +38,15 @@ public class AuthenticationTest extends AbstractTest{
         Assertions.assertNull(token);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getStatusCodeValue());
     }
+
+
+    @Test
+    public void testTransactionBeginEnd(){
+        String token = authenticateUser(validCashierUsername, validCashierPassword).getBody();
+        ResponseEntity<String> result = beginTransaction(token);
+        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
+
+        result = endTransaction(token);
+        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
+    }
 }

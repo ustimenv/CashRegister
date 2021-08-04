@@ -21,14 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CheckoutNoOfferTest extends AbstractTest{
 
     @Test
-    public void testTransactionBegin(){
-        String token = authenticateUser(validCashierUsername, validCashierPassword).getBody();
-        ResponseEntity<String> result = beginTransaction(token);
-        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
-    }
-
-    @Test
-    public void testAddItemsNoOffers() throws InvalidAttributeValueException{
+    public void testAddItemsNoRemoving() throws InvalidAttributeValueException{
         List<ChangeItemQuantityRequest> items = List.of(
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT",1),
                 new ChangeItemQuantityRequest("TSHIRT", 1),  new ChangeItemQuantityRequest("PANTS", 2),
@@ -44,4 +37,13 @@ public class CheckoutNoOfferTest extends AbstractTest{
         // Since we only add 1 type of item per scan, a numerical equivalence is enough here
         testTransactionFeedbackEvolution(items, expectedFeedback);
     }
+
+    @Test
+    public void testAddItemsWithRemoving() throws InvalidAttributeValueException{
+    }
+
+    @Test
+    public void testAddItemsWithIllegalRemoving() throws InvalidAttributeValueException{
+    }
+
 }

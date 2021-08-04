@@ -14,5 +14,5 @@ public interface CashRegisterTransactionRepository extends CrudRepository<CashRe
 
     @Query(value = "SELECT COUNT(t) FROM CashRegisterTransaction t WHERE t.status = :status AND t.transactionExecutor = :cashier")
     int countTransactionsWithStatusByCashier(@Param("status") CashRegisterTransaction.Status transactionStatus,
-                                                                     @Param("cashier") Cashier cashier);
+                                             @Param("cashier") Cashier cashier);
 }

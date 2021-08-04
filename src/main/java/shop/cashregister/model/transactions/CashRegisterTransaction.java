@@ -24,7 +24,7 @@ public class CashRegisterTransaction{
     private @Setter double value=0;                      // (subtotal for STARTED transactions) money value of the transaction
 
     @Enumerated(EnumType.STRING)                // TODO convert to ORDINAL
-    private Status status =Status.STARTED;
+    private @Setter Status status =Status.STARTED;
 
     @Column(name = "completion_time")
     private @Setter LocalDateTime completionTime;

@@ -26,6 +26,9 @@ public class Basket{
 
     public void setNumberOf(String itemCode, int newNumberOf){
         items.put(itemCode, newNumberOf);
+        if(items.get(itemCode) < 1){
+            items.remove(itemCode);
+        }
     }
 
     public double getTotal(){
@@ -34,5 +37,9 @@ public class Basket{
 
     public void setTotal(double total){
         this.total = total;
+    }
+
+    public boolean isEmpty(){
+        return items.isEmpty();
     }
 }

@@ -34,8 +34,9 @@ public class TransactionItemsService{
         for(TransactionItems itemInfo : transactionItems){
             String itemCode = itemInfo.getItem().getCode();
             int itemQuantity = itemInfo.getNumberSold();
-            basket.setTotal(itemQuantity * itemInfo.getItem().getDefaultPrice());
+            basket.setTotal(basket.getTotal() + itemQuantity * itemInfo.getItem().getDefaultPrice());
             basket.setNumberOf(itemCode, itemQuantity);
+
         }
         return basket;
     }
