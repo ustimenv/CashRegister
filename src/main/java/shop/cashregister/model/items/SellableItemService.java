@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.InvalidNameException;
+import java.util.List;
 
 import static java.text.MessageFormat.format;
 
@@ -25,6 +26,10 @@ public class SellableItemService{
         if(SellableItem.isCodeValid(itemCode)){
             return repository.getItemByCode(itemCode);
         } else    throw new InvalidNameException(format("{0} is an invalid item code", itemCode));
+    }
+
+    public List<SellableItem> getAll(){
+        return repository.getAll();
     }
 
 }

@@ -7,21 +7,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import shop.cashregister.model.items.SellableItem;
-import shop.cashregister.model.offers.Basket;
-import shop.cashregister.model.offers.SingleItemOffer;
-import shop.cashregister.model.transactions.*;
 import shop.cashregister.model.cashier.Cashier;
 import shop.cashregister.model.cashier.CashierService;
+import shop.cashregister.model.items.SellableItem;
 import shop.cashregister.model.items.SellableItemService;
+import shop.cashregister.model.offers.Basket;
 import shop.cashregister.model.offers.OfferService;
+import shop.cashregister.model.offers.SingleItemOffer;
+import shop.cashregister.model.transactions.*;
 
 import javax.naming.InvalidNameException;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  *  Controller responsible for all requests made by the cashier during the checkout process
@@ -46,6 +44,10 @@ public class RootController{
     @Autowired
     private TransactionItemsService transactionItemsService;
 
+    @GetMapping(value="/{username}/list_items", produces="application/json")
+    public ResponseEntity<List<SellableItem>> listItems(@PathVariable(value = "username") String username) throws InvalidNameException{
+        return ResponseEntity.ok(itemService.getAll());
+    }
 
     @Transactional
     @PostMapping(value="/{username}/begin", produces="application/json")
@@ -58,8 +60,10 @@ public class RootController{
         CashRegisterTransaction newTransaction = new CashRegisterTransaction();
         newTransaction.setTransactionExecutor(cashier);
         transactionsService.save(newTransaction);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     @Transactional
     @PostMapping(value="/{username}/end", produces="application/json")
@@ -108,6 +112,39 @@ public class RootController{
         return ResponseEntity.ok(feedback);
     }
 
+    @Transactional
+    @PostMapping(value="/{username}/remove_item", produces="application/json")
+    public ResponseEntity<TransactionFeedback> removeItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
+            throws InvalidNameException{
+
+        Cashier cashier = cashierService.getByUsername(username);
+        if(cashier == null)         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        CashRegisterTransaction transaction = transactionsService.getActiveTransactionByUser(cashier);
+        if(transaction == null)     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        SellableItem item = itemService.getByCode(request.getItemCode());
+        if(item == null)            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        // remove item from the 'basket'
+        try{
+            transactionItemsService.removeFromBasket(transaction, item, request.getChangeBy());
+        } catch (TransactionQuantityException e){   // attempting to remove a non-existent item or invalid input
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Basket basket = transactionItemsService.getBasketByTransaction(transaction);
+
+        // apply offers
+        TransactionFeedback feedback = applyOffersToBasket(basket);
+
+        // update transaction subtotal
+        transaction.setValue(feedback.getAmountToPay());
+        transactionsService.save(transaction);
+
+        return ResponseEntity.ok(feedback);
+    }
+
     private TransactionFeedback applyOffersToBasket(Basket basket){
         TransactionFeedback feedback = new TransactionFeedback(-1);
         List<SingleItemOffer> offers = offerService.getCurrentlyAvailableOffers();
@@ -124,45 +161,6 @@ public class RootController{
         }
         feedback.setAmountToPay(basket.getTotal() - discount);
         return feedback;
-    }
-
-    @Transactional
-    @PostMapping(value="/{username}/remove_item", produces="application/json")
-    public ResponseEntity<TransactionFeedback> removeItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
-            throws InvalidNameException{
-
-        System.out.println("0");
-        Cashier cashier = cashierService.getByUsername(username);
-        if(cashier == null)         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        System.out.println("1");
-
-        CashRegisterTransaction transaction = transactionsService.getActiveTransactionByUser(cashier);
-        if(transaction == null)     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        System.out.println("2");
-
-        SellableItem item = itemService.getByCode(request.getItemCode());
-        if(item == null)            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        System.out.println("3");
-
-        // remove item from the 'basket'
-        try{
-            transactionItemsService.removeFromBasket(transaction, item, request.getChangeBy());
-        } catch (TransactionQuantityException e){   // attempting to remove a non-existent item or invalid input
-            System.out.println("3.5");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        System.out.println("4");
-
-        Basket basket = transactionItemsService.getBasketByTransaction(transaction);
-
-        // apply offers
-        TransactionFeedback feedback = applyOffersToBasket(basket);
-
-        // update transaction subtotal
-        transaction.setValue(feedback.getAmountToPay());
-        transactionsService.save(transaction);
-
-        return ResponseEntity.ok(feedback);
     }
 
 }

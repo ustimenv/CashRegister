@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Entity
-@Getter
 @NoArgsConstructor
 public class SellableItem implements Serializable{
     @Id
@@ -18,13 +17,13 @@ public class SellableItem implements Serializable{
     private long id;
 
     @Column(name="full_name")
-    private String fullName;
+    private @Getter String fullName;
 
     @Column(name="code", unique = true)
-    private String code;
+    private @Getter String code;
 
     @Column(name="default_price", nullable = false)
-    private double defaultPrice;
+    private @Getter double defaultPrice;
 
     // between 1 and 10 characters: capitals & digits
     private static final Pattern itemCodePattern = Pattern.compile("^[A-Z0-9]{1,10}$");
