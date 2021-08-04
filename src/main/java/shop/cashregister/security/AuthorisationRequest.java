@@ -1,4 +1,4 @@
-package shop.cashregister.model.cashier;
+package shop.cashregister.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

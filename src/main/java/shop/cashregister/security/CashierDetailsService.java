@@ -1,4 +1,4 @@
-package shop.cashregister.config;
+package shop.cashregister.security;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import shop.cashregister.model.cashier.Cashier;
 import shop.cashregister.model.cashier.CashierService;
 
@@ -15,6 +15,7 @@ import javax.naming.InvalidNameException;
 
 import static java.text.MessageFormat.format;
 
+@Service
 public class CashierDetailsService implements UserDetailsService{
     private static Logger log = LogManager.getLogger(CashierDetailsService.class);
 

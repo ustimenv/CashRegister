@@ -13,6 +13,7 @@ public class XForThePriceOfYOffer extends SingleItemOffer{
         super(item);
         this.numItemsPaidFor = numItemsPaidFor;
         this.numItemsReceived = numItemsReceived;
+        this.offerCode = "XFY_"+item.getCode()+"_"+numItemsPaidFor+"_"+numItemsReceived;
     }
 
 

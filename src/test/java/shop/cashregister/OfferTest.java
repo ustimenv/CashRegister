@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import shop.cashregister.model.transactions.ChangeItemQuantityRequest;
-import shop.cashregister.model.transactions.IntermediateTransactionFeedback;
+import shop.cashregister.model.transactions.TransactionFeedback;
 
 import javax.management.InvalidAttributeValueException;
 import java.util.List;
@@ -20,9 +20,9 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
                 new ChangeItemQuantityRequest("VOUCHER", 1)
         );
-        List<IntermediateTransactionFeedback> expectedFeedback = List.of(
-                new IntermediateTransactionFeedback(7.5, null),  new IntermediateTransactionFeedback(27.5, null),
-                new IntermediateTransactionFeedback(27.5, null)
+        List<TransactionFeedback> expectedFeedback = List.of(
+                new TransactionFeedback(7.5, null, null),  new TransactionFeedback(27.5, null, null),
+                new TransactionFeedback(27.5, null, null)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }
@@ -34,10 +34,10 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("TSHIRT", 1), new ChangeItemQuantityRequest("VOUCHER", 1),
                 new ChangeItemQuantityRequest("TSHIRT", 1)
         );
-        List<IntermediateTransactionFeedback> expectedFeedback = List.of(
-                new IntermediateTransactionFeedback(20, null),  new IntermediateTransactionFeedback(40, null),
-                new IntermediateTransactionFeedback(57, null),  new IntermediateTransactionFeedback(62, null),
-                new IntermediateTransactionFeedback(81, null)
+        List<TransactionFeedback> expectedFeedback = List.of(
+                new TransactionFeedback(20, null, null),  new TransactionFeedback(40, null, null),
+                new TransactionFeedback(57, null, null),  new TransactionFeedback(62, null, null),
+                new TransactionFeedback(81, null, null)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }
@@ -50,11 +50,11 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("PANTS", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
                 new ChangeItemQuantityRequest("TSHIRT", 1)
         );
-        List<IntermediateTransactionFeedback> expectedFeedback = List.of(
-                new IntermediateTransactionFeedback(5, null),  new IntermediateTransactionFeedback(25, null),
-                new IntermediateTransactionFeedback(25, null),  new IntermediateTransactionFeedback(30, null),
-                new IntermediateTransactionFeedback(37.5, null),  new IntermediateTransactionFeedback(57.5, null),
-                new IntermediateTransactionFeedback(74.5, null)
+        List<TransactionFeedback> expectedFeedback = List.of(
+                new TransactionFeedback(5, null, null),  new TransactionFeedback(25, null, null),
+                new TransactionFeedback(25, null, null),  new TransactionFeedback(30, null, null),
+                new TransactionFeedback(37.5, null, null),  new TransactionFeedback(57.5, null, null),
+                new TransactionFeedback(74.5, null, null)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }
@@ -67,11 +67,11 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", 1),
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", -1)
         );
-        List<IntermediateTransactionFeedback> expectedFeedback = List.of(
-                new IntermediateTransactionFeedback(5, null),  new IntermediateTransactionFeedback(25, null),
-                new IntermediateTransactionFeedback(25, null), new IntermediateTransactionFeedback(45, null),
-                new IntermediateTransactionFeedback(50, null), new IntermediateTransactionFeedback(67, null),
-                new IntermediateTransactionFeedback(67, null), new IntermediateTransactionFeedback(50, null)
+        List<TransactionFeedback> expectedFeedback = List.of(
+                new TransactionFeedback(5, null, null),  new TransactionFeedback(25, null, null),
+                new TransactionFeedback(25, null, null), new TransactionFeedback(45, null, null),
+                new TransactionFeedback(50, null, null), new TransactionFeedback(67, null, null),
+                new TransactionFeedback(67, null, null), new TransactionFeedback(50, null, null)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }

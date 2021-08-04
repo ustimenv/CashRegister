@@ -6,14 +6,14 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import shop.cashregister.control.CheckOutController;
-import shop.cashregister.model.cashier.AuthorisationRequest;
+import shop.cashregister.control.RootController;
+import shop.cashregister.security.AuthorisationRequest;
 import shop.cashregister.model.items.SellableItemService;
 import shop.cashregister.model.offers.OfferService;
 import shop.cashregister.model.transactions.CashRegisterTransactionService;
 import shop.cashregister.model.transactions.ChangeItemQuantityRequest;
 import shop.cashregister.model.transactions.HistoricalItemsSoldService;
-import shop.cashregister.model.transactions.IntermediateTransactionFeedback;
+import shop.cashregister.model.transactions.TransactionFeedback;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class AbstractTest{
     TestRestTemplate restTemplate;
 
     @Autowired
-    private CheckOutController checkOutController;
+    private RootController rootController;
 
     @Autowired
     private SellableItemService itemService;
@@ -48,7 +48,7 @@ public class AbstractTest{
     String cashierUrl = baseUrl + "/cashier";
     String loginEndpoint = cashierUrl + "/login";
 
-    String checkoutUrl = baseUrl + "/" + validCashierUsername + "/checkout";
+    String checkoutUrl = baseUrl + "/checkout/" + validCashierUsername;
     String beginTransactionEndpoint =           checkoutUrl +   "/begin";
     String endTransactionEndpoint =             checkoutUrl +   "/end";
     String addItemTransactionEndpoint =         checkoutUrl +   "/add_item";
@@ -63,26 +63,40 @@ public class AbstractTest{
     }
 
     ResponseEntity<String> beginTransaction(){
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
+        System.out.println(beginTransactionEndpoint);
         return restTemplate.postForEntity(beginTransactionEndpoint, null, String.class);
     }
 
-    ResponseEntity<IntermediateTransactionFeedback> addItem(ChangeItemQuantityRequest itemDesc){
-        return restTemplate.postForEntity(addItemTransactionEndpoint, itemDesc, IntermediateTransactionFeedback.class);
+    ResponseEntity<TransactionFeedback> addItem(ChangeItemQuantityRequest itemDesc){
+        return restTemplate.postForEntity(addItemTransactionEndpoint, itemDesc, TransactionFeedback.class);
     }
 
-    ResponseEntity<IntermediateTransactionFeedback> removeItem(ChangeItemQuantityRequest itemDesc){
-        return restTemplate.postForEntity(removeItemTransactionEndpoint, itemDesc, IntermediateTransactionFeedback.class);
+    ResponseEntity<TransactionFeedback> removeItem(ChangeItemQuantityRequest itemDesc){
+        return restTemplate.postForEntity(removeItemTransactionEndpoint, itemDesc, TransactionFeedback.class);
     }
 
-    ResponseEntity<IntermediateTransactionFeedback> endTransaction(){
-        return restTemplate.postForEntity(endTransactionEndpoint, null, IntermediateTransactionFeedback.class);
+    ResponseEntity<TransactionFeedback> endTransaction(){
+        return restTemplate.postForEntity(endTransactionEndpoint, null, TransactionFeedback.class);
     }
 
     @Test
-    void testSubtotalsSeries(List<ChangeItemQuantityRequest> items, List<IntermediateTransactionFeedback> expectedFeedback){
+    void testSubtotalsSeries(List<ChangeItemQuantityRequest> items, List<TransactionFeedback> expectedFeedback){
         for(int i=0; i<items.size(); i++){
-            ResponseEntity<IntermediateTransactionFeedback> result = addItem(items.get(i));
-            assertEquals(result.getBody().getSubtotal(), expectedFeedback.get(i).getSubtotal());
+            ResponseEntity<TransactionFeedback> result = addItem(items.get(i));
+            assertEquals(result.getBody().getAmountToPay(), expectedFeedback.get(i).getAmountToPay());
             assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
         }
     }

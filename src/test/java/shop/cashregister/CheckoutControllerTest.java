@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import shop.cashregister.model.transactions.ChangeItemQuantityRequest;
-import shop.cashregister.model.transactions.IntermediateTransactionFeedback;
+import shop.cashregister.model.transactions.TransactionFeedback;
 
 import javax.management.InvalidAttributeValueException;
 import java.util.List;
@@ -22,16 +22,20 @@ public class CheckoutControllerTest extends AbstractTest{
     // BEGIN
     @Test
     public void testTransactionBegin(){
+        authenticateValidUser();
         ResponseEntity<String> result = beginTransaction();
-        assertTrue(result.getBody() == null || result.getBody().length() < 1);      // empty response
+//        assertTrue(result.getBody() == null || result.getBody().length() < 1);      // empty response
         assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
     }
 
     @Test
     public void testTransactionConcurrentBegin(){
-        ResponseEntity<String> result = beginTransaction();
-        assertTrue(result.getBody() == null || result.getBody().length() < 1);      // empty response
-        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatusCodeValue());  // a cashier can only perform one checkout operation at any given point in time
+        ResponseEntity<String> result1 = beginTransaction();
+        ResponseEntity<String> result2 = beginTransaction();
+        assertTrue(result1.getBody() == null || result1.getBody().length() < 1);
+        // first begin request should go through, the second will yield a TOO_MANY_REQUESTS
+        assertEquals(HttpStatus.OK.value(),                result1.getStatusCodeValue());
+        assertEquals(HttpStatus.TOO_MANY_REQUESTS.value(), result2.getStatusCodeValue());
     }
 
     // ADD ITEM
@@ -42,10 +46,10 @@ public class CheckoutControllerTest extends AbstractTest{
                 new ChangeItemQuantityRequest("TSHIRT", 1),  new ChangeItemQuantityRequest("PANTS", 2),
                 new ChangeItemQuantityRequest("PANTS", 1)
         );
-        List<IntermediateTransactionFeedback> expectedFeedback = List.of(
-                new IntermediateTransactionFeedback(5, null),    new IntermediateTransactionFeedback(25, null),
-                new IntermediateTransactionFeedback(45, null),   new IntermediateTransactionFeedback(60, null),
-                new IntermediateTransactionFeedback(67.5, null)
+        List<TransactionFeedback> expectedFeedback = List.of(
+                new TransactionFeedback(5, null, null),    new TransactionFeedback(25, null, null),
+                new TransactionFeedback(45, null, null),   new TransactionFeedback(60, null, null),
+                new TransactionFeedback(67.5, null, null)
         );
 
         // The input items list doesn't contain any offers, we check to ensure no offer has been triggered
@@ -56,7 +60,7 @@ public class CheckoutControllerTest extends AbstractTest{
     //END TODO
     @Test
     public void testTransactionEnd(){
-        ResponseEntity<IntermediateTransactionFeedback> result = endTransaction();
+        ResponseEntity<TransactionFeedback> result = endTransaction();
 
 //        assertTrue(result.getBody() != null && result.getBody() > 0);               // response contains the final amount to pay
         assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
@@ -64,7 +68,7 @@ public class CheckoutControllerTest extends AbstractTest{
 
     @Test  //TODO
     public void testTransactionEndBeforeStarting(){
-        ResponseEntity<IntermediateTransactionFeedback> result = endTransaction();
+        ResponseEntity<TransactionFeedback> result = endTransaction();
         assertNull(result.getBody());                                               // transaction cannot be ended before it begins, hence price to pay is null
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatusCodeValue());  // is an invalid request
     }

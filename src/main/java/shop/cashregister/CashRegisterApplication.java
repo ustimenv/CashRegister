@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(//exclude = { SecurityAutoConfiguration.class },
-		scanBasePackages={"shop.cashregister.model", "shop.cashregister.control", "shop.cashregister.config"})
+		scanBasePackages={"shop.cashregister.security", "shop.cashregister.model", "shop.cashregister.control", "shop.cashregister.config"})
 @EnableTransactionManagement
 public class CashRegisterApplication{
 

@@ -13,6 +13,7 @@ public class WholesaleDiscountOffer extends SingleItemOffer{
         super(item);
         this.quantityThreshold = quantityThreshold;
         this.discountPrice = discountPrice;
+        offerCode = "WDI_"+item.getCode() + "_" +quantityThreshold + "_" + discountPrice;
     }
 
     @Override

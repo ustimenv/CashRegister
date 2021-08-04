@@ -5,11 +5,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import shop.cashregister.security.AuthorisationRequest;
 import shop.cashregister.model.cashier.Cashier;
 import shop.cashregister.model.cashier.CashierService;
 import shop.cashregister.model.items.SellableItemService;
@@ -17,21 +20,23 @@ import shop.cashregister.model.offers.OfferService;
 import shop.cashregister.model.transactions.CashRegisterTransaction;
 import shop.cashregister.model.transactions.CashRegisterTransactionService;
 import shop.cashregister.model.transactions.HistoricalItemsSoldService;
-import shop.cashregister.model.transactions.IntermediateTransactionFeedback;
+import shop.cashregister.model.transactions.TransactionFeedback;
+import shop.cashregister.security.JwtTokenManager;
 
 import javax.naming.InvalidNameException;
-import java.security.Principal;
+import java.text.MessageFormat;
+import java.util.Map;
 
 /**
  *  Controller responsible for all requests made by the cashier during the checkout process
  */
 @RestController
 @RequestMapping("/checkout")
-public class CheckOutController{
-    private static Logger log = LogManager.getLogger(CheckOutController.class);
+public class RootController{
+    private static Logger log = LogManager.getLogger(RootController.class);
 
     @Autowired
-    private CheckOutController checkOutController;
+    private RootController rootController;
 
     @Autowired
     private SellableItemService itemService;
@@ -48,12 +53,19 @@ public class CheckOutController{
     @Autowired
     private HistoricalItemsSoldService historicalItemsSoldService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    JwtTokenManager tokenManager;
+
+
     @Transactional
     @PostMapping(value="/{username}/begin", produces="application/json")
-    public ResponseEntity<String> initiateTransaction(@PathVariable(value = "username") String username, Principal principal) throws InvalidNameException{
-        if(!principal.getName().equals(username)){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<String> initiateTransaction(@PathVariable(value = "username") String username) throws InvalidNameException{
         Cashier cashier = cashierService.getByUsername(username);
         if(transactionsService.doesCashierHaveActiveAnTransaction(cashier)){
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
@@ -67,10 +79,7 @@ public class CheckOutController{
 
     @Transactional
     @PostMapping(value="/{username}/end", produces="application/json")
-    public ResponseEntity<IntermediateTransactionFeedback> endTransaction(@PathVariable(value = "username") String username, Principal principal) throws InvalidNameException{
-        if(!principal.getName().equals(username)){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<TransactionFeedback> endTransaction(@PathVariable(value = "username") String username) throws InvalidNameException{
         Cashier cashier = cashierService.getByUsername(username);
         if(!transactionsService.doesCashierHaveActiveAnTransaction(cashier)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -84,13 +93,35 @@ public class CheckOutController{
 
     @Transactional
     @PostMapping(value="/{username}/add_item", produces="application/json")
-    public Object addItem(@PathVariable(value = "username") String username){
+    public Object addItem(@PathVariable(value = "username") String username,
+                          @RequestHeader Map<String, String> headers){
         return null;
     }
 
     @Transactional
     @PostMapping(value="/{username}/remove_item", produces="application/json")
-    public Object removeItem(@PathVariable(value = "username") String username){
+    public Object removeItem(@PathVariable(value = "username") String username,
+                             @RequestHeader Map<String, String> headers){
         return null;
+    }
+
+    @PostMapping(value="/login", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<String> login(@RequestBody AuthorisationRequest authReq){
+        String username = authReq.getUsername();
+        String password = authReq.getPassword();
+        try{
+            Cashier cashier = cashierService.getByUsername(username);
+            // attempt to log in
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authReq.getUsername(), authReq.getPassword()));
+            // if successful, update the security context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // and respond with the assigned jwt token to allow the client to sign their future requests
+            return ResponseEntity.ok(tokenManager.generateToken(authentication));
+
+        } catch(Exception e){
+            log.info(MessageFormat.format("Invalid credentials for username {0}", username));
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 }

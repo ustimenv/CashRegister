@@ -4,6 +4,11 @@ import shop.cashregister.model.items.SellableItem;
 
 public abstract class SingleItemOffer{
     protected SellableItem item;
+    protected String offerCode;
+
+    protected SingleItemOffer(SellableItem item){
+        this.item = item;
+    }
 
     public abstract String getDescription();
     public abstract String getSuggestion(Basket basket);
@@ -14,7 +19,20 @@ public abstract class SingleItemOffer{
 
     public abstract Basket apply(Basket  basket);
 
-    protected SingleItemOffer(SellableItem item){
-        this.item = item;
+
+    public String getOfferCode(){
+        return offerCode;
+    }
+    @Override
+    public int hashCode(){
+        return offerCode.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof SingleItemOffer){
+            return ((SingleItemOffer) other).offerCode.equals(offerCode);
+        }
+        return false;
     }
 }
