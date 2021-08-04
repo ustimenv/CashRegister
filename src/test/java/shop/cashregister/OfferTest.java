@@ -21,8 +21,8 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("VOUCHER", 1)
         );
         List<TransactionFeedback> expectedFeedback = List.of(
-                new TransactionFeedback(7.5, null, null),  new TransactionFeedback(27.5, null, null),
-                new TransactionFeedback(27.5, null, null)
+                new TransactionFeedback(7.5),  new TransactionFeedback(27.5),
+                new TransactionFeedback(27.5)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }
@@ -35,9 +35,9 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("TSHIRT", 1)
         );
         List<TransactionFeedback> expectedFeedback = List.of(
-                new TransactionFeedback(20, null, null),  new TransactionFeedback(40, null, null),
-                new TransactionFeedback(57, null, null),  new TransactionFeedback(62, null, null),
-                new TransactionFeedback(81, null, null)
+                new TransactionFeedback(20),  new TransactionFeedback(40),
+                new TransactionFeedback(57),  new TransactionFeedback(62),
+                new TransactionFeedback(81)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }
@@ -51,10 +51,10 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("TSHIRT", 1)
         );
         List<TransactionFeedback> expectedFeedback = List.of(
-                new TransactionFeedback(5, null, null),  new TransactionFeedback(25, null, null),
-                new TransactionFeedback(25, null, null),  new TransactionFeedback(30, null, null),
-                new TransactionFeedback(37.5, null, null),  new TransactionFeedback(57.5, null, null),
-                new TransactionFeedback(74.5, null, null)
+                new TransactionFeedback(5),  new TransactionFeedback(25),
+                new TransactionFeedback(25),  new TransactionFeedback(30),
+                new TransactionFeedback(37.5),  new TransactionFeedback(57.5),
+                new TransactionFeedback(74.5)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }
@@ -68,10 +68,10 @@ public class OfferTest extends AbstractTest{
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT", -1)
         );
         List<TransactionFeedback> expectedFeedback = List.of(
-                new TransactionFeedback(5, null, null),  new TransactionFeedback(25, null, null),
-                new TransactionFeedback(25, null, null), new TransactionFeedback(45, null, null),
-                new TransactionFeedback(50, null, null), new TransactionFeedback(67, null, null),
-                new TransactionFeedback(67, null, null), new TransactionFeedback(50, null, null)
+                new TransactionFeedback(5),  new TransactionFeedback(25),
+                new TransactionFeedback(25), new TransactionFeedback(45),
+                new TransactionFeedback(50), new TransactionFeedback(67),
+                new TransactionFeedback(67), new TransactionFeedback(50)
         );
         testSubtotalsSeries(items, expectedFeedback);
     }

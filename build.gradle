@@ -24,6 +24,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
 	implementation 'io.jsonwebtoken:jjwt:0.2'
+	implementation("org.apache.httpcomponents:httpclient:4.5")
 
 
 	testCompileOnly 'org.projectlombok:lombok:1.18.20'

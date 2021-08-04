@@ -6,6 +6,7 @@ import shop.cashregister.model.items.SellableItem;
 import shop.cashregister.model.items.SellableItemService;
 
 import javax.naming.InvalidNameException;
+import java.util.List;
 
 @Service
 public class OfferService{
@@ -30,5 +31,9 @@ public class OfferService{
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<SingleItemOffer> getCurrentlyAvailableOffers(){
+        return List.of(getTshirtsFor19EachIfMoreThan2(), get2VouchersForThePriceOf1());
     }
 }

@@ -1,9 +1,13 @@
 package shop.cashregister.model.offers;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Basket{
     private Map<String, Integer> items;     // map item code to item quantity

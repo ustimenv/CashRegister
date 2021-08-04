@@ -20,7 +20,7 @@ public class CashRegisterTransactionService{
     }
 
     public boolean doesCashierHaveActiveAnTransaction(Cashier cashier){
-        return repository.countTransactionsWithStatusByCashier(STARTED, cashier) == 0;
+        return repository.countTransactionsWithStatusByCashier(STARTED, cashier) >0;
     }
 
     public CashRegisterTransaction getActiveTransactionByUser(Cashier cashier){

@@ -47,7 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity httpSec) throws Exception {
         httpSec
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/cashier/login").permitAll()
+//                .authorizeRequests().antMatchers("/cashier/login").permitAll()
+                .authorizeRequests().antMatchers("/**").permitAll() //TODO specify exact paths
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();

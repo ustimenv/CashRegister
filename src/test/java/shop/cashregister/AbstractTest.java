@@ -1,9 +1,9 @@
 package shop.cashregister;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import shop.cashregister.control.RootController;
@@ -12,7 +12,7 @@ import shop.cashregister.model.items.SellableItemService;
 import shop.cashregister.model.offers.OfferService;
 import shop.cashregister.model.transactions.CashRegisterTransactionService;
 import shop.cashregister.model.transactions.ChangeItemQuantityRequest;
-import shop.cashregister.model.transactions.HistoricalItemsSoldService;
+import shop.cashregister.model.transactions.TransactionItemsService;
 import shop.cashregister.model.transactions.TransactionFeedback;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class AbstractTest{
     private CashRegisterTransactionService transactionsService;
 
     @Autowired
-    private HistoricalItemsSoldService historicalItemsSoldService;
+    private TransactionItemsService transactionItemsService;
 
 
     String validCashierUsername = "Caroline";
@@ -55,14 +55,19 @@ public class AbstractTest{
     String removeItemTransactionEndpoint =      checkoutUrl +   "/remove_item";
 
 
+
     ResponseEntity<String> authenticateUser(String username, String password){
         AuthorisationRequest credentials = new AuthorisationRequest(username, password);
         HttpEntity<AuthorisationRequest> request = new HttpEntity<>(credentials);
         return restTemplate.postForEntity(loginEndpoint, request, String.class);
     }
 
-    ResponseEntity<String> beginTransaction(){
-        return restTemplate.postForEntity(beginTransactionEndpoint, null, String.class);
+
+    ResponseEntity<String> beginTransaction(String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("Bearer "+token);
+//        headers.set("Authorization", "Bearer "+token);
+        return restTemplate.postForEntity(beginTransactionEndpoint, headers, String.class);
     }
 
     ResponseEntity<TransactionFeedback> addItem(ChangeItemQuantityRequest itemDesc){

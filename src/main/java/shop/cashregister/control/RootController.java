@@ -5,26 +5,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import shop.cashregister.security.AuthorisationRequest;
+import shop.cashregister.model.items.SellableItem;
+import shop.cashregister.model.offers.Basket;
+import shop.cashregister.model.offers.SingleItemOffer;
+import shop.cashregister.model.transactions.*;
 import shop.cashregister.model.cashier.Cashier;
 import shop.cashregister.model.cashier.CashierService;
 import shop.cashregister.model.items.SellableItemService;
 import shop.cashregister.model.offers.OfferService;
-import shop.cashregister.model.transactions.CashRegisterTransaction;
-import shop.cashregister.model.transactions.CashRegisterTransactionService;
-import shop.cashregister.model.transactions.HistoricalItemsSoldService;
-import shop.cashregister.model.transactions.TransactionFeedback;
-import shop.cashregister.security.JwtTokenManager;
 
 import javax.naming.InvalidNameException;
-import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,8 +44,7 @@ public class RootController{
     private CashRegisterTransactionService transactionsService;
 
     @Autowired
-    private HistoricalItemsSoldService historicalItemsSoldService;
-
+    private TransactionItemsService transactionItemsService;
 
 
     @Transactional
@@ -73,21 +65,53 @@ public class RootController{
     @PostMapping(value="/{username}/end", produces="application/json")
     public ResponseEntity<TransactionFeedback> endTransaction(@PathVariable(value = "username") String username) throws InvalidNameException{
         Cashier cashier = cashierService.getByUsername(username);
-        if(!transactionsService.doesCashierHaveActiveAnTransaction(cashier)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
         CashRegisterTransaction transactionToEnd = transactionsService.getActiveTransactionByUser(cashier);
-        //todo update long-term records
         transactionsService.delete(transactionToEnd);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Transactional
     @PostMapping(value="/{username}/add_item", produces="application/json")
-    public Object addItem(@PathVariable(value = "username") String username,
-                          @RequestHeader Map<String, String> headers){
-        return null;
+    public ResponseEntity<TransactionFeedback> addItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request) throws InvalidNameException{
+        Cashier cashier = cashierService.getByUsername(username);
+        if(cashier == null)         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        CashRegisterTransaction transaction = transactionsService.getActiveTransactionByUser(cashier);
+        if(transaction == null)     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        SellableItem item = itemService.getByCode(request.getItemCode());
+        if(item == null)            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        // add item to the 'basket'
+        transactionItemsService.putInBasket(transaction, item, request.getChangeBy());
+        Basket basket = transactionItemsService.getBasketByTransaction(transaction);
+
+        // apply offers
+        TransactionFeedback feedback = applyOffersToBasket(basket);
+
+        // update transaction subtotal
+        transaction.setValue(feedback.getAmountToPay());
+        transactionsService.save(transaction);
+        return ResponseEntity.ok(feedback);
+    }
+
+    private TransactionFeedback applyOffersToBasket(Basket basket){
+        TransactionFeedback feedback = new TransactionFeedback(-1);
+        List<SingleItemOffer> offers = offerService.getCurrentlyAvailableOffers();
+        double discount = 0;
+        for(SingleItemOffer offer : offers){
+            if(offer.isApplicableToBasket(basket)){
+                basket = offer.apply(basket);
+                discount += offer.getMaxDiscount(basket);
+                feedback.addOffer(offer.getDescription());
+            }
+            if(offer.isAlmostApplicableToBasket(basket)){
+                feedback.addSuggestion(offer.getSuggestion(basket));
+            }
+        }
+        feedback.setAmountToPay(basket.getTotal() - discount);
+        return feedback;
     }
 
     @Transactional

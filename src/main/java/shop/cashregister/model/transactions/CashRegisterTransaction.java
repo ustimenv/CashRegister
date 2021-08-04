@@ -1,5 +1,6 @@
 package shop.cashregister.model.transactions;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import shop.cashregister.model.cashier.Cashier;
@@ -17,20 +18,20 @@ public class CashRegisterTransaction{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private @Getter long id;
 
-    private double amount;                      // (subtotal for STARTED transactions) money value of the transaction
+    @Column(name="value", nullable=false)
+    private @Setter double value=0;                      // (subtotal for STARTED transactions) money value of the transaction
 
     @Enumerated(EnumType.STRING)                // TODO convert to ORDINAL
     private Status status =Status.STARTED;
 
     @Column(name = "completion_time")
-    private LocalDateTime completionTime;
+    private @Setter LocalDateTime completionTime;
 
     @ManyToOne
     @JoinColumn(name="transactions")
-    private @Setter
-    Cashier transactionExecutor;
+    private @Setter Cashier transactionExecutor;
 
     @Override
     public boolean equals(Object other){
