@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Basket{
-    private Map<String, Integer> items;     // map item code to item quantity
+    private Map<String, Integer> items=new HashMap<>();     // map item code to item quantity
     private double total;                   // effective price of the items in the basket
 
     public Basket getBasketWithOneMoreOf(String itemCode){
@@ -23,8 +24,8 @@ public class Basket{
         return items.getOrDefault(itemCode, 0);
     }
 
-    public int setNumberOf(String itemCode, int newNumberOf){
-        return items.put(itemCode, newNumberOf);
+    public void setNumberOf(String itemCode, int newNumberOf){
+        items.put(itemCode, newNumberOf);
     }
 
     public double getTotal(){

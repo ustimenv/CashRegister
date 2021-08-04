@@ -39,8 +39,8 @@ public class AbstractTest{
     private TransactionItemsService transactionItemsService;
 
 
-    String validCashierUsername = "Caroline";
-    String validCashierPassword = "pass";
+    protected String validCashierUsername = "Caroline";
+    protected String validCashierPassword = "pass";
 
     // URLS & endpoints
     String baseUrl = "http://localhost:" + 8080;
@@ -54,40 +54,48 @@ public class AbstractTest{
     String addItemTransactionEndpoint =         checkoutUrl +   "/add_item";
     String removeItemTransactionEndpoint =      checkoutUrl +   "/remove_item";
 
-
-
-    ResponseEntity<String> authenticateUser(String username, String password){
+    protected ResponseEntity<String> authenticateUser(String username, String password){
         AuthorisationRequest credentials = new AuthorisationRequest(username, password);
         HttpEntity<AuthorisationRequest> request = new HttpEntity<>(credentials);
         return restTemplate.postForEntity(loginEndpoint, request, String.class);
     }
 
-
-    ResponseEntity<String> beginTransaction(String token){
+    protected ResponseEntity<String> beginTransaction(String token){
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth("Bearer "+token);
-//        headers.set("Authorization", "Bearer "+token);
-        return restTemplate.postForEntity(beginTransactionEndpoint, headers, String.class);
+        headers.setBearerAuth("Bearer " + token);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        return restTemplate.postForEntity(beginTransactionEndpoint, request, String.class);
     }
 
-    ResponseEntity<TransactionFeedback> addItem(ChangeItemQuantityRequest itemDesc){
-        return restTemplate.postForEntity(addItemTransactionEndpoint, itemDesc, TransactionFeedback.class);
+    protected ResponseEntity<TransactionFeedback> addItem(String token, ChangeItemQuantityRequest itemDesc){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("Bearer " + token);
+        HttpEntity<ChangeItemQuantityRequest> request = new HttpEntity<>(itemDesc, headers);
+        return restTemplate.postForEntity(addItemTransactionEndpoint, request, TransactionFeedback.class);
     }
 
-    ResponseEntity<TransactionFeedback> removeItem(ChangeItemQuantityRequest itemDesc){
-        return restTemplate.postForEntity(removeItemTransactionEndpoint, itemDesc, TransactionFeedback.class);
+    protected ResponseEntity<TransactionFeedback> removeItem(String token, ChangeItemQuantityRequest itemDesc){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("Bearer " + token);
+        HttpEntity<ChangeItemQuantityRequest> request = new HttpEntity<>(itemDesc, headers);
+        return restTemplate.postForEntity(removeItemTransactionEndpoint, request, TransactionFeedback.class);
     }
 
-    ResponseEntity<TransactionFeedback> endTransaction(){
-        return restTemplate.postForEntity(endTransactionEndpoint, null, TransactionFeedback.class);
+    protected ResponseEntity<String> endTransaction(String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("Bearer " + token);
+        return restTemplate.postForEntity(endTransactionEndpoint, new HttpEntity<>(headers), String.class);
     }
 
-    void testSubtotalsSeries(List<ChangeItemQuantityRequest> items, List<TransactionFeedback> expectedFeedback){
+    protected void testTransactionFeedbackEvolution(List<ChangeItemQuantityRequest> items, List<TransactionFeedback> expectedFeedback){
+        String token = authenticateUser(validCashierUsername, validCashierPassword).getBody();
+        beginTransaction(token);
         for(int i=0; i<items.size(); i++){
-            ResponseEntity<TransactionFeedback> result = addItem(items.get(i));
+            ResponseEntity<TransactionFeedback> result = addItem(token, items.get(i));
             assertEquals(result.getBody().getAmountToPay(), expectedFeedback.get(i).getAmountToPay());
             assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
         }
+        endTransaction(token);
     }
 
 }

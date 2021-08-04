@@ -1,4 +1,4 @@
-package shop.cashregister;
+package shop.cashregister.transaction;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -6,20 +6,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import shop.cashregister.AbstractTest;
 import shop.cashregister.model.transactions.ChangeItemQuantityRequest;
 import shop.cashregister.model.transactions.TransactionFeedback;
 
 import javax.management.InvalidAttributeValueException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class CheckoutControllerTest extends AbstractTest{
+public class CheckoutNoOfferTest extends AbstractTest{
 
-    // BEGIN
     @Test
     public void testTransactionBegin(){
         String token = authenticateUser(validCashierUsername, validCashierPassword).getBody();
@@ -28,21 +28,7 @@ public class CheckoutControllerTest extends AbstractTest{
     }
 
     @Test
-    public void testTransactionConcurrentBegin(){
-        String token = authenticateUser(validCashierUsername, validCashierPassword).getBody();
-        ResponseEntity<String> result = beginTransaction(token);
-        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
-
-        result = beginTransaction(token);
-
-        // first begin request should go through, the second will yield a TOO_MANY_REQUESTS
-        assertEquals(HttpStatus.TOO_MANY_REQUESTS.value(), result.getStatusCodeValue());
-    }
-
-    // ADD ITEM
-    @Test
     public void testAddItemsNoOffers() throws InvalidAttributeValueException{
-
         List<ChangeItemQuantityRequest> items = List.of(
                 new ChangeItemQuantityRequest("VOUCHER", 1), new ChangeItemQuantityRequest("TSHIRT",1),
                 new ChangeItemQuantityRequest("TSHIRT", 1),  new ChangeItemQuantityRequest("PANTS", 2),
@@ -56,24 +42,6 @@ public class CheckoutControllerTest extends AbstractTest{
 
         // The input items list doesn't contain any offers, we check to ensure no offer has been triggered
         // Since we only add 1 type of item per scan, a numerical equivalence is enough here
-        testSubtotalsSeries(items, expectedFeedback);
+        testTransactionFeedbackEvolution(items, expectedFeedback);
     }
-
-    //END TODO
-    @Test
-    public void testTransactionEnd(){
-        ResponseEntity<TransactionFeedback> result = endTransaction();
-
-//        assertTrue(result.getBody() != null && result.getBody() > 0);               // response contains the final amount to pay
-        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());           // with an OK status code
-    }
-
-    @Test  //TODO
-    public void testTransactionEndBeforeStarting(){
-        ResponseEntity<TransactionFeedback> result = endTransaction();
-        assertNull(result.getBody());                                               // transaction cannot be ended before it begins, hence price to pay is null
-        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatusCodeValue());  // is an invalid request
-    }
-
-
 }
