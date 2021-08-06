@@ -1,6 +1,7 @@
 import ast
 import tkinter as tk
 from http import server
+from time import sleep
 
 import requests
 
@@ -22,10 +23,12 @@ class CheckoutScreen(tk.Frame):
     subtotal=0
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
 
+        tk.Frame.__init__(self, parent)
+        self.parent = parent
         self.controller = controller
         # Frame elements
+        self.total = None
         self.name_label = None                  # logged in cashier's name, top left corner
         self.finalise_button = None             # click to end the transaction and go to 'payment'
         self.scanned_items_container = None     # list of entries of type ScannedItem, on the left side
@@ -46,24 +49,42 @@ class CheckoutScreen(tk.Frame):
         self.finalise_button = tk.Button(self, text="Finalise Transaction", command=self.end_transaction)
         self.scanned_items_container = ScannedItems(self)
         self.item_select_container = DropDownMenuWithSearch(self)
-        self.offers_applied_container = OffersApplied(self, width=400, height=.3*self.winfo_height(), background='red')
-        self.suggestions_container = Suggestions(self, width=400, height=.4*self.winfo_height(), background='blue')
+        self.offers_applied_container = OffersApplied(self, width=500, height=.3*self.winfo_height())
+        self.suggestions_container = Suggestions(self, width=500, height=.4*self.winfo_height())
+        self.offers_applied_container = OffersApplied(self, width=400, height=500)
 
         # Wacky geometry
         tk.Label(self, text=f'Cashier: {self.controller.username}', font=("Verdana", 20)).pack(side=tk.TOP, anchor=tk.NW)
         self.item_select_container.pack(side=tk.TOP)
         self.scanned_items_container.pack(side=tk.TOP, anchor=tk.NW)
         self.finalise_button.pack(side=tk.BOTTOM, anchor=tk.S)
-        self.offers_applied_container.pack(side=tk.BOTTOM, anchor=tk.CENTER)
-        self.suggestions_container.pack(side=tk.TOP, anchor=tk.E)
+        self.offers_applied_container.pack(side=tk.RIGHT, anchor=tk.NE)
+        self.suggestions_container.pack(side=tk.RIGHT, anchor=tk.NE)
         self._begin_transaction()
 
     def _begin_transaction(self):
         self.controller.post(self._begin_transaction_endpoint, json={})
 
     def end_transaction(self):
-        req = requests.post(self._end_transaction_endpoint)
-        print("Transaction ended")
+        if self.subtotal > 0:
+            requests.post(self._end_transaction_endpoint)
+            self.total = tk.Label(self, text=f'Total: {self.subtotal}', font=("Verdana", 150))
+            self.total.place(width=self.winfo_width()/2, height=self.winfo_height()/2)
+            self._next_transaction_button = tk.Button(self, text="New Transaction", command=self._next_transaction)
+            self._next_transaction_button.pack(side=tk.TOP)
+            print("Transaction ended, to pay: " + str(self.subtotal))
+        else:
+            print("You haven't started the transaction")
+
+    def _next_transaction(self):
+        for child in (self.item_select_container, self.scanned_items_container, self.offers_applied_container,
+                      self.suggestions_container):
+            child.clear()
+        self.finalise_button = tk.Button(self, text="Finalise Transaction", command=self.end_transaction)
+        self.subtotal = 0
+        self.total.destroy()
+        self._next_transaction_button.destroy()
+        self._begin_transaction()
 
     def on_item_added(self, item, server_response):
         if server_response.status_code == 200:
@@ -75,9 +96,6 @@ class CheckoutScreen(tk.Frame):
             self._apply_feedback(ast.literal_eval(server_response.content.decode('utf-8')))
 
     def _apply_feedback(self, feedback):
-        print(feedback['amountToPay'])
-        print(feedback['offers'])
-        print(feedback['suggestions'])
         self.subtotal = feedback['amountToPay']
         self.offers_applied_container.refresh_elements(feedback['offers'])
-        self.offers_applied_container.refresh_elements(feedback['suggestions'])
+        self.suggestions_container.refresh_elements(feedback['suggestions'])

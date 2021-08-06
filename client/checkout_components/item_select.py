@@ -7,11 +7,9 @@ from checkout_components.items_scanned import SellableItem
 
 
 # Simple dropdown selection field that fitetrs items shown based on characters types in the search bar
-
-
 class DropDownMenuWithSearch(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, width=300, height=200)
         self.parent = parent
 
         self._add_item_endpoint = f'{self.parent.route}/add_item'
@@ -48,3 +46,7 @@ class DropDownMenuWithSearch(tk.Frame):
         items_info = ast.literal_eval(req.content.decode('utf-8'))
 
         return {SellableItem(item['code'], item['fullName'], item['defaultPrice']) for item in items_info}
+
+
+    def clear(self):
+        pass

@@ -1,12 +1,8 @@
-import ast
 import tkinter as tk
 from functools import partial
 
 
 # Container type for an item at the cash register
-import requests
-
-
 class SellableItem:
     def __init__(self, code, full_name, price):
         self.code = code
@@ -24,11 +20,11 @@ class SellableItem:
 
 class ScannedItems(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent, width=300, height=800)
+        tk.Frame.__init__(self, parent, width=200, height=400)
         self.parent = parent
         tk.Label(master=self, text='Scanned', font=("Verdana", 20)).pack(side=tk.TOP)
         self.scanned_items = []
-
+        self.pack_propagate(0)
         self._remove_item_endpoint = f'{self.parent.route}/remove_item'
 
     def add_item_to_list(self, item):
@@ -62,11 +58,16 @@ class ScannedItems(tk.Frame):
                         del self.scanned_items[i]
                     self.parent.on_item_removed(server_response)
 
+    def clear(self):
+        for i, entry in enumerate(self.scanned_items):
+            entry.destroy()
+            del self.scanned_items[i]
+
 
 # Wrapper around SellableItem, display the item, quantity currently selected, a remove button to decrement quantity by 1
 class ScannedItemsEntry(tk.Frame):
-    def __init__(self, parent: ScannedItems, item: SellableItem , quantity=1):
-        tk.Frame.__init__(self, parent, background='green')
+    def __init__(self, parent: ScannedItems, item: SellableItem, quantity=1):
+        tk.Frame.__init__(self, parent)
         self.parent = parent
         self.item = item
         self.quantity = quantity

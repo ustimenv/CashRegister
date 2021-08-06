@@ -15,22 +15,24 @@ class Client(tk.Tk):
         self.geometry('1920x1080')
         self.title('Till')
         self.route = "http://localhost:8080"
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand=True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        self.container = tk.Frame(self)
+        self.container.pack(side="top", fill="both", expand=True)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
         for F in (LoginScreen, CheckoutScreen):
             page_name = F.__name__
-            frame = F(parent=container, controller=self)
+            frame = F(parent=self.container, controller=self)
             self.frames[page_name] = frame
             # stack the frames on top of each other, the raised one will be the one visible
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("LoginScreen")
 
-    def show_frame(self, page_name):
+    def show_frame(self, page_name, reset_page=False):
+        if reset_page:
+            self.frames[page_name].__init__(parent=self.container, controller=self)
         frame = self.frames[page_name]
         if hasattr(frame, 'prepare'):
             frame.prepare()
