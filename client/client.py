@@ -1,7 +1,5 @@
 import tkinter as tk
 
-import requests
-
 from checkout_screen import CheckoutScreen
 from login_screen import LoginScreen
 
@@ -9,15 +7,12 @@ from login_screen import LoginScreen
 class Client(tk.Tk):
     username = None
     session_token = None
-    server_base_url = "http://localhost:8080"
-    cashier_url = "http://localhost:8080/cashier"
-    checkout_url = "http://localhost:8080/checkout"
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.geometry('1080x720')
         self.title('Till')
-
+        self.route = "http://localhost:8080"
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -28,10 +23,7 @@ class Client(tk.Tk):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
-
-            # put all of the pages in the same location;
-            # the one on the top of the stacking order
-            # will be the one that is visible.
+            # stack the frames on top of each other, the raised one will be the one visible
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("LoginScreen")
