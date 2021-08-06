@@ -50,10 +50,15 @@ class ScannedItems(tk.Frame):
         headers = {'Content-type': 'application/json',
                    'Authorization': f'Bearer {self.parent.controller.session_token}'}
         req = requests.post(self._add_item_endpoint, json={'itemCode': item.code, 'changeBy': '1'}, headers=headers)
+        print(req.content)
         if req.status_code == 200:
             return ast.literal_eval(req.content.decode('utf-8'))
         else:
             return None
+
+    def update_offers_and_suggestions(self, offers: [], suggestions: []):
+        self.parent.update_offers(offers)
+        self.parent.update_suggestions(suggestions)
 
     def remove_item(self, item):
         if self._post_remove_item(item) is not None:
