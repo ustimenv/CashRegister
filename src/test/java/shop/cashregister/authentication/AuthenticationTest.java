@@ -40,4 +40,17 @@ public class AuthenticationTest extends AbstractTest{
         Assertions.assertNull(token);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getStatusCodeValue());
     }
+
+    @Test
+    public void testCorrectCredentialsWrongEndpoint(){
+        ResponseEntity<String> result = authenticateUser(username, password);
+        String token = result.getBody();
+        Assertions.assertTrue(token != null && token.length() > 0);
+        assertEquals(HttpStatus.OK.value(), result.getStatusCodeValue());
+        result = beginTransaction("A", token);
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getStatusCodeValue());
+
+    }
+
+
 }

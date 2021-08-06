@@ -49,7 +49,6 @@ public class AuthController{
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authReq.getUsername(), authReq.getPassword()));
             // if successful, update the security context
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             // and respond with the assigned jwt token to allow the client to sign their future requests
             return ResponseEntity.ok(tokenManager.generateToken(authentication));
 

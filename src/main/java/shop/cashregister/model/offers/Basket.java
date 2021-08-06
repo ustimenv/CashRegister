@@ -12,7 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class Basket{
     private Map<String, Integer> items=new HashMap<>();     // map item code to item quantity
-    private double total;                   // effective price of the items in the basket
+    private double total;                                   // effective price of the items in the basket
 
     public Basket getBasketWithOneMoreOf(String itemCode){
         Basket newBasket = new Basket(items, total);

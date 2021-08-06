@@ -27,11 +27,8 @@ class LoginScreen(tk.Frame):
         tk.Button(self.login_form, text="Log in", command=login_function).grid(row=3, column=0)
 
     def _do_login(self, username, password):
-        # TODO change back to reading user input!
         input_name = username.get()
         input_password = password.get()
-        input_name = 'A'
-        input_password = 'pass'
 
         if len(input_name) > 0 and len(input_password) > 0:
             headers = {'Content-type': 'application/json'}

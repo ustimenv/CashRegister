@@ -23,7 +23,7 @@ public class CashRegisterTransaction{
     @Column(name="value", nullable=false)
     private @Setter double value=0;                      // (subtotal for STARTED transactions) money value of the transaction
 
-    @Enumerated(EnumType.STRING)                // TODO convert to ORDINAL
+    @Enumerated(EnumType.STRING)
     private @Setter Status status =Status.STARTED;
 
     @Column(name = "completion_time")

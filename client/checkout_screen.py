@@ -1,12 +1,10 @@
 import ast
 import tkinter as tk
-from http import server
-from time import sleep
 
 import requests
 
 from checkout_components.item_select import DropDownMenuWithSearch
-from checkout_components.items_scanned import ScannedItems, SellableItem
+from checkout_components.items_scanned import ScannedItems
 from checkout_components.offers_applied import OffersApplied
 from checkout_components.suggestions import Suggestions
 
@@ -85,6 +83,8 @@ class CheckoutScreen(tk.Frame):
         self.total.destroy()
         self._next_transaction_button.destroy()
         self._begin_transaction()
+        # for some reason tkinter doesn't clear all items when there are many of them
+        self.scanned_items_container.clear()
 
     def on_item_added(self, item, server_response):
         if server_response.status_code == 200:

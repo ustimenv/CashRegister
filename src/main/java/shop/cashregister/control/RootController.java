@@ -15,10 +15,9 @@ import shop.cashregister.model.offers.Basket;
 import shop.cashregister.model.offers.OfferService;
 import shop.cashregister.model.offers.SingleItemOffer;
 import shop.cashregister.model.transactions.*;
+import shop.cashregister.security.JwtTokenManager;
 
 import javax.naming.InvalidNameException;
-import javax.servlet.http.HttpServletResponse;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,14 +46,31 @@ public class RootController{
     @Autowired
     private TransactionItemsService transactionItemsService;
 
+    @Autowired
+    private JwtTokenManager tokenManager;
+
+    private boolean isClaimedUsernameDifferentFromTokenUsername(String token, String username){
+        token = token.replaceAll("Bearer ", "");
+        return !tokenManager.extractUsernameFromToken(token).equals(username);
+    }
+
     @GetMapping(value="/{username}/list_items", produces="application/json")
-    public ResponseEntity<List<SellableItem>> listItems(@PathVariable(value = "username") String username) throws InvalidNameException{
+    public ResponseEntity<List<SellableItem>> listItems(@PathVariable(value = "username") String username,
+                                                        @RequestHeader("Authorization") String token) throws InvalidNameException{
+        if(isClaimedUsernameDifferentFromTokenUsername(token, username))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
         return ResponseEntity.ok(itemService.getAll());
     }
 
     @Transactional
     @PostMapping(value="/{username}/begin", produces="application/json")
-    public ResponseEntity<String> initiateTransaction(@PathVariable(value = "username") String username) throws InvalidNameException{
+    public ResponseEntity<String> initiateTransaction(@PathVariable(value = "username") String username,
+                                                      @RequestHeader("Authorization") String token) throws InvalidNameException{
+        if(isClaimedUsernameDifferentFromTokenUsername(token, username))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+
         Cashier cashier = cashierService.getByUsername(username);
         if(transactionsService.doesCashierHaveActiveAnTransaction(cashier)){
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
@@ -70,7 +86,11 @@ public class RootController{
 
     @Transactional
     @PostMapping(value="/{username}/end", produces="application/json")
-    public ResponseEntity<TransactionFeedback> endTransaction(@PathVariable(value = "username") String username) throws InvalidNameException{
+    public ResponseEntity<TransactionFeedback> endTransaction(@PathVariable(value = "username") String username,
+                                                              @RequestHeader("Authorization") String token) throws InvalidNameException{
+        if(isClaimedUsernameDifferentFromTokenUsername(token, username))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
         Cashier cashier = cashierService.getByUsername(username);
         CashRegisterTransaction transactionToEnd = transactionsService.getActiveTransactionByUser(cashier);
         transactionToEnd.setCompletionTime(LocalDateTime.now());
@@ -82,10 +102,14 @@ public class RootController{
 
     @Transactional
     @PostMapping(value="/{username}/add_item", produces="application/json")
-    public ResponseEntity<TransactionFeedback> addItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
-            throws InvalidNameException{
+    public ResponseEntity<TransactionFeedback> addItem(@PathVariable(value = "username") String username,
+                                                       @RequestBody ChangeItemQuantityRequest request,
+                                                       @RequestHeader("Authorization") String token) throws InvalidNameException{
+        if(isClaimedUsernameDifferentFromTokenUsername(token, username))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
         Cashier cashier = cashierService.getByUsername(username);
-        if(cashier == null){        // TODO check username against the security context
+        if(cashier == null){
             log.error(format("Error starting transaction for cashier {0}: Failed to verify cashier identity",
                     username));
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -127,8 +151,11 @@ public class RootController{
 
     @Transactional
     @PostMapping(value="/{username}/remove_item", produces="application/json")
-    public ResponseEntity<TransactionFeedback> removeItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
-            throws InvalidNameException{
+    public ResponseEntity<TransactionFeedback> removeItem(@PathVariable(value = "username") String username,
+                                                          @RequestBody ChangeItemQuantityRequest request,
+                                                          @RequestHeader("Authorization") String token) throws InvalidNameException{
+        if(isClaimedUsernameDifferentFromTokenUsername(token, username))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         Cashier cashier = cashierService.getByUsername(username);
         if(cashier == null)         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
