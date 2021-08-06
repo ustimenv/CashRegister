@@ -25,7 +25,7 @@ public class XForThePriceOfYOffer extends SingleItemOffer{
 
     @Override
     public String getSuggestion(Basket basket){
-        return "If you buy just one more " + item + ", you will increase your total discount by"+item.getDefaultPrice()+" € !";
+        return "If you buy just one more " + item.getFullName() + ", you will increase your total discount by"+item.getDefaultPrice()+" € !";
     }
 
     @Override

@@ -1,5 +1,6 @@
 import ast
 import tkinter as tk
+from http import server
 
 import requests
 
@@ -17,6 +18,8 @@ class CheckoutScreen(tk.Frame):
     _end_transaction_endpoint = None
     _add_item_endpoint = None
     _remove_item_endpoint = None
+
+    subtotal=0
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -40,39 +43,41 @@ class CheckoutScreen(tk.Frame):
         self._end_transaction_endpoint = f'{self.route}/end'
 
         # Child components
-        self.finalise_button = tk.Button(self, text="Finalise Transaction", command=self.finalise)
+        self.finalise_button = tk.Button(self, text="Finalise Transaction", command=self.end_transaction)
         self.scanned_items_container = ScannedItems(self)
         self.item_select_container = DropDownMenuWithSearch(self)
-        self.offers_applied_container = OffersApplied(self, width=400, height=.4*self.winfo_height())
-        self.suggestions_container = Suggestions(self, width=400, height=.4*self.winfo_height())
+        self.offers_applied_container = OffersApplied(self, width=400, height=.3*self.winfo_height(), background='red')
+        self.suggestions_container = Suggestions(self, width=400, height=.4*self.winfo_height(), background='blue')
 
         # Wacky geometry
         tk.Label(self, text=f'Cashier: {self.controller.username}', font=("Verdana", 20)).pack(side=tk.TOP, anchor=tk.NW)
         self.item_select_container.pack(side=tk.TOP)
         self.scanned_items_container.pack(side=tk.TOP, anchor=tk.NW)
-        self.offers_applied_container.pack(side=tk.TOP, anchor=tk.E)
         self.finalise_button.pack(side=tk.BOTTOM, anchor=tk.S)
-        self.suggestions_container.pack(side=tk.BOTTOM, anchor=tk.E)
+        self.offers_applied_container.pack(side=tk.BOTTOM, anchor=tk.CENTER)
+        self.suggestions_container.pack(side=tk.TOP, anchor=tk.E)
         self._begin_transaction()
 
     def _begin_transaction(self):
-        headers = {'Content-type': 'application/json',
-                   'Authorization': f'Bearer {self.controller.session_token}'}
-        requests.post(self._begin_transaction_endpoint, headers=headers)
+        self.controller.post(self._begin_transaction_endpoint, json={})
 
-    def finalise(self):
-        headers = {'Content-type': 'application/json',
-                   'Authorization': f'Bearer {self.controller.session_token}'}
-        req = requests.post(self._end_transaction_endpoint, headers=headers)
+    def end_transaction(self):
+        req = requests.post(self._end_transaction_endpoint)
         print("Transaction ended")
 
-    def update_offers(self, offers):
-        self.offers_applied_container.refresh_offers(offers)
+    def on_item_added(self, item, server_response):
+        if server_response.status_code == 200:
+            self._apply_feedback(ast.literal_eval(server_response.content.decode('utf-8')))
+            self.scanned_items_container.add_item_to_list(item)
 
-    def update_suggestions(self, suggestions):
-        self.offers_applied_container.refresh_suggestions(suggestions)
+    def on_item_removed(self, server_response):
+        if server_response.status_code == 200:
+            self._apply_feedback(ast.literal_eval(server_response.content.decode('utf-8')))
 
-
-    def scan_item(self, item):
-        self.scanned_items_container.add_item(item)
-
+    def _apply_feedback(self, feedback):
+        print(feedback['amountToPay'])
+        print(feedback['offers'])
+        print(feedback['suggestions'])
+        self.subtotal = feedback['amountToPay']
+        self.offers_applied_container.refresh_elements(feedback['offers'])
+        self.offers_applied_container.refresh_elements(feedback['suggestions'])

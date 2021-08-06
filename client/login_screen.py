@@ -39,7 +39,7 @@ class LoginScreen(tk.Frame):
             req = requests.post(self._login_endpoint,
                                 json={'username': input_name, 'password': input_password}, headers=headers)
             if req.status_code == 200:
-                self.controller.session_token = req.content.decode('utf-8')
+                self.controller.set_session_token(req.content.decode('utf-8'))
                 self.controller.username = input_name
                 self._set_feedback('Okay')
                 self.controller.show_frame('CheckoutScreen')

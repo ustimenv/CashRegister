@@ -165,7 +165,8 @@ public class RootController{
             if(offer.isApplicableToBasket(basket)){
                 basket = offer.apply(basket);
                 feedback.addOffer(offer.getDescription());
-            } else if(offer.isAlmostApplicableToBasket(basket)){
+            }
+            if(offer.isAlmostApplicableToBasket(basket)){
                 feedback.addSuggestion(offer.getSuggestion(basket));
             }
         }

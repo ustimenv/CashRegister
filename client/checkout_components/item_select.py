@@ -2,18 +2,19 @@ import ast
 import tkinter as tk
 from tkinter import ttk
 from tkinter.ttk import Entry
-import requests
 
 from checkout_components.items_scanned import SellableItem
 
 
 # Simple dropdown selection field that fitetrs items shown based on characters types in the search bar
 
+
 class DropDownMenuWithSearch(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
 
+        self._add_item_endpoint = f'{self.parent.route}/add_item'
         self._list_items_endpoint = f'{self.parent.route}/list_items'
         self.sellable_items = self._list_items()
 
@@ -37,11 +38,13 @@ class DropDownMenuWithSearch(tk.Frame):
     def _add_item(self, _):
         for item in self.sellable_items:
             if item.code == self.combobox.get():
-                self.parent.scan_item(item)
+                server_response = self.parent.controller.post(self._add_item_endpoint,
+                                                              json={'itemCode': item.code, 'changeBy': '1'})
+                self.parent.on_item_added(item, server_response)
 
-    def _list_items(self):  # Initialise the set of all possible scanable items
-        headers = {'Content-type': 'application/json', 'Authorization': f'Bearer {self.parent.controller.session_token}'}
-        req = requests.get(self._list_items_endpoint, headers=headers)
+    # Initialise the set of all possible scanable items
+    def _list_items(self):
+        req = self.parent.controller.get(self._list_items_endpoint)
         items_info = ast.literal_eval(req.content.decode('utf-8'))
 
         return {SellableItem(item['code'], item['fullName'], item['defaultPrice']) for item in items_info}
