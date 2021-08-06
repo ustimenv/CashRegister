@@ -18,7 +18,7 @@ public class WholesaleDiscountOffer extends SingleItemOffer{
 
     @Override
     public String getDescription(){
-        return format("If you buy more than {0} {1}s, you only pay {2} for each one!",
+        return format("Buy more than {0} {1}s, pay {2} for each one",
                 quantityThreshold-1, item.getFullName(), discountPrice);
     }
 
@@ -33,19 +33,18 @@ public class WholesaleDiscountOffer extends SingleItemOffer{
         if(!isApplicableToBasket(basket)){
             return 0;
         } else{
-            int numTShirts = basket.getNumberOf(item.getCode());
-            return numTShirts * item.getDefaultPrice() - numTShirts * discountPrice;
+            return basket.getNumberOf(item.getCode()) * (item.getDefaultPrice() - discountPrice);
         }
     }
 
     @Override
     public boolean isAlmostApplicableToBasket(Basket basket){
-        return basket.getNumberOf(item.getCode()) == 2;
+        return basket.getNumberOf(item.getCode()) == quantityThreshold-1;
     }
 
     @Override
     public boolean isApplicableToBasket(Basket basket){
-        return basket.getNumberOf(item.getCode()) >= 3;
+        return basket.getNumberOf(item.getCode()) >= quantityThreshold;
     }
 
     @Override

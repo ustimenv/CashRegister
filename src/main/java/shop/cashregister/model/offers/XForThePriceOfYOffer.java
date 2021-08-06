@@ -19,35 +19,35 @@ public class XForThePriceOfYOffer extends SingleItemOffer{
 
     @Override
     public String getDescription(){
-        return format("If you buy {0} {1}, you get {2} for the same price!",
-                        numItemsPaidFor, item.getFullName(), numItemsReceived);
+        return format("{0} {1}s for the price of {2}",
+                        numItemsReceived, item.getFullName(), numItemsPaidFor);
     }
 
     @Override
     public String getSuggestion(Basket basket){
-        return "If you buy just one more voucher, you will increase your total discount by 5€ !";
+        return "If you buy just one more " + item + ", you will increase your total discount by"+item.getDefaultPrice()+" € !";
     }
 
     @Override
     public double getMaxDiscount(Basket basket){
-        return item.getDefaultPrice() * (int)(basket.getNumberOf(item.getCode()) / 2);
+        return item.getDefaultPrice() * ((int)(basket.getNumberOf(item.getCode()) / numItemsReceived));
     }
 
     @Override
     public boolean isAlmostApplicableToBasket(Basket basket){
-        return basket.getNumberOf(item.getCode()) % 2 == 1;
+        return basket.getNumberOf(item.getCode()) % numItemsReceived == 1;
     }
 
     @Override
     public boolean isApplicableToBasket(Basket basket){
-        return basket.getNumberOf(item.getCode()) > 1;
+        return basket.getNumberOf(item.getCode()) >= numItemsReceived;
     }
 
     @Override
     public Basket apply(Basket basket){
         if(isApplicableToBasket(basket)){ ;
             basket.setTotal(basket.getTotal() - getMaxDiscount(basket));
-            basket.setNumberOf(item.getCode(), basket.getNumberOf(item.getCode()) % 2); // if odd number, set to 1, if even reset to 0
+            basket.setNumberOf(item.getCode(),  basket.getNumberOf(item.getCode()) % numItemsReceived);
         }
         return basket;
     }

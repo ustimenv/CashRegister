@@ -94,6 +94,7 @@ public class RootController{
         if(transaction == null){
             log.error(format("Error starting transaction for cashier {0}: Transaction hasn't been started",
                     cashier.getUsername()));
+
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -160,18 +161,15 @@ public class RootController{
     private TransactionFeedback applyOffersToBasket(Basket basket){
         TransactionFeedback feedback = new TransactionFeedback(-1);
         List<SingleItemOffer> offers = offerService.getCurrentlyAvailableOffers();
-        double discount = 0;
         for(SingleItemOffer offer : offers){
             if(offer.isApplicableToBasket(basket)){
                 basket = offer.apply(basket);
-                discount += offer.getMaxDiscount(basket);
                 feedback.addOffer(offer.getDescription());
-            }
-            if(offer.isAlmostApplicableToBasket(basket)){
+            } else if(offer.isAlmostApplicableToBasket(basket)){
                 feedback.addSuggestion(offer.getSuggestion(basket));
             }
         }
-        feedback.setAmountToPay(basket.getTotal() - discount);
+        feedback.setAmountToPay(basket.getTotal());
         return feedback;
     }
 
