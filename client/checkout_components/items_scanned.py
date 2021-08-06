@@ -34,27 +34,47 @@ class ScannedItems(tk.Frame):
         self._remove_item_endpoint = f'{self.parent.route}/remove_item'
 
     def add_item(self, item):
-        for i, entry in enumerate(self.scanned_items):
-            if entry.item == item:
-                quantity = entry.quantity
-                entry.destroy()
-                self.scanned_items[i] = ScannedItemsEntry(item, self, quantity + 1)
-            entry.pack(side=tk.TOP)
+        if self._post_add_item(item) is not None:
+            for i, entry in enumerate(self.scanned_items):
+                if entry.item == item:
+                    quantity = entry.quantity
+                    entry.destroy()
+                    self.scanned_items[i] = ScannedItemsEntry(item, self, quantity + 1)
+                entry.pack(side=tk.TOP)
 
-        self.scanned_items.append(ScannedItemsEntry(item, self))
-        self.scanned_items[-1].pack(side=tk.TOP)
+            self.scanned_items.append(ScannedItemsEntry(item, self))
+            self.scanned_items[-1].pack(side=tk.TOP)
 
+    # return true if successful
+    def _post_add_item(self, item):
+        headers = {'Content-type': 'application/json',
+                   'Authorization': f'Bearer {self.parent.controller.session_token}'}
+        req = requests.post(self._add_item_endpoint, json={'itemCode': item.code, 'changeBy': '1'}, headers=headers)
+        if req.status_code == 200:
+            return ast.literal_eval(req.content.decode('utf-8'))
+        else:
+            return None
 
     def remove_item(self, item):
-        for i, entry in enumerate(self.scanned_items):
-            entry.pack(side=tk.TOP)
-            if entry.item == item:
-                quantity_post_remove = entry.quantity - 1
-                entry.destroy()
-                if quantity_post_remove > 0:
-                    self.scanned_items[i] = ScannedItemsEntry(item, self, quantity_post_remove)
-                else:
-                    del self.scanned_items[i]
+        if self._post_remove_item(item) is not None:
+            for i, entry in enumerate(self.scanned_items):
+                entry.pack(side=tk.TOP)
+                if entry.item == item:
+                    quantity_post_remove = entry.quantity - 1
+                    entry.destroy()
+                    if quantity_post_remove > 0:
+                        self.scanned_items[i] = ScannedItemsEntry(item, self, quantity_post_remove)
+                    else:
+                        del self.scanned_items[i]
+
+    def _post_remove_item(self, item):
+        headers = {'Content-type': 'application/json',
+                   'Authorization': f'Bearer {self.parent.controller.session_token}'}
+        req = requests.post(self._remove_item_endpoint, json={'itemCode': item.code, 'changeBy': -1}, headers=headers)
+        if req.status_code == 200:
+            return ast.literal_eval(req.content.decode('utf-8'))
+        else:
+            return None
 
 
 # Wrapper around SellableItem, display the item, quantity currently selected, a remove button to decrement quantity by 1

@@ -39,16 +39,23 @@ class CheckoutScreen(tk.Frame):
         self.scanned_items = ScannedItems(self)
         self.finalise_button = tk.Button(self, text="Finalise Transaction", command=self.finalise)
 
-
         # Wacky geometry
-        tk.Label(self, text=f'Cashier: {self.controller.username}', font=("Verdana", 20)).pack(side=tk.TOP,
-                                                                                               anchor=tk.NW)
+        tk.Label(self, text=f'Cashier: {self.controller.username}', font=("Verdana", 20)).pack(side=tk.TOP, anchor=tk.NW)
         self.item_select.pack(side=tk.TOP)
         self.scanned_items.pack(side=tk.TOP, anchor=tk.NW)
         self.finalise_button.pack(side=tk.BOTTOM, anchor=tk.S)
+        self._begin_transaction()
+
+    def _begin_transaction(self):
+        headers = {'Content-type': 'application/json',
+                   'Authorization': f'Bearer {self.controller.session_token}'}
+        req = requests.post(self._begin_transaction_endpoint, headers=headers)
 
     def finalise(self):
-        pass
+        headers = {'Content-type': 'application/json',
+                   'Authorization': f'Bearer {self.controller.session_token}'}
+        req = requests.post(self._end_transaction_endpoint, headers=headers)
+        print('End', req.status_code)
 
     def scan_item(self, item):
         self.scanned_items.add_item(item)

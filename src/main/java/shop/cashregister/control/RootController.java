@@ -18,8 +18,11 @@ import shop.cashregister.model.transactions.*;
 
 import javax.naming.InvalidNameException;
 import javax.servlet.http.HttpServletResponse;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static java.text.MessageFormat.format;
 
 /**
  *  Controller responsible for all requests made by the cashier during the checkout process
@@ -79,25 +82,34 @@ public class RootController{
 
     @Transactional
     @PostMapping(value="/{username}/add_item", produces="application/json")
-    public ResponseEntity<TransactionFeedback> addItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request, HttpServletResponse response)
+    public ResponseEntity<TransactionFeedback> addItem(@PathVariable(value = "username") String username, @RequestBody ChangeItemQuantityRequest request)
             throws InvalidNameException{
-
         Cashier cashier = cashierService.getByUsername(username);
-        if(cashier == null)
+        if(cashier == null){        // TODO check username against the security context
+            log.error(format("Error starting transaction for cashier {0}: Failed to verify cashier identity",
+                    username));
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+        }
         CashRegisterTransaction transaction = transactionsService.getActiveTransactionByUser(cashier);
-        if(transaction == null)
+        if(transaction == null){
+            log.error(format("Error starting transaction for cashier {0}: Transaction hasn't been started",
+                    cashier.getUsername()));
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         SellableItem item = itemService.getByCode(request.getItemCode());
-        if(item == null)
+        if(item == null){
+            log.error(format("Error adding item by cashier {0}: Item code {1} specified is unknown",
+                    cashier.getUsername(), request.getItemCode()));
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         // add item to the 'basket'
         try{
             transactionItemsService.putInBasket(transaction, item, request.getChangeBy());
         } catch(TransactionQuantityException e){    // invalid input
+            log.error(format("Error adding item by cashier {0}: Invalid number of items {1}",
+                    cashier.getUsername(), request.getChangeBy()));
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
